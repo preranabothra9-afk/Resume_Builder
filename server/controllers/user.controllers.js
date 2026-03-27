@@ -170,14 +170,51 @@ export const getResumes = async (req, res) => {
 };
 
 //FORGOT PASSWORD
+// export const forgotPassword = async (req, res) => {
+//   try {
+
+//     const { email } = req.body;
+
+//     const user = await User.findOne({ email });
+
+//     if (!user) {
+//       return res.status(404).json({
+//         message: "User not found"
+//       });
+//     }
+
+//     const token = crypto.randomBytes(32).toString("hex");
+
+//     user.resetToken = token;
+//     user.resetTokenExpire = Date.now() + 15 * 60 * 1000; // 15 minutes
+
+//     await user.save();
+
+//     const resetLink = `http://resume-builder-lyart-one.vercel.app/reset-password/${token}`;
+//     //const resetLink = `https://resume-builder-lyart-one.vercel.app/reset-password/${token}`;
+
+//     await sendResetEmail(email, resetLink);
+
+//     res.json({
+//       message: "Password reset email sent"
+//     });
+
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 export const forgotPassword = async (req, res) => {
   try {
 
+    console.log("Forgot password request received");
+
     const { email } = req.body;
+    console.log("Email:", email);
 
     const user = await User.findOne({ email });
 
     if (!user) {
+      console.log("User not found");
       return res.status(404).json({
         message: "User not found"
       });
@@ -186,20 +223,30 @@ export const forgotPassword = async (req, res) => {
     const token = crypto.randomBytes(32).toString("hex");
 
     user.resetToken = token;
-    user.resetTokenExpire = Date.now() + 15 * 60 * 1000; // 15 minutes
+    user.resetTokenExpire = Date.now() + 15 * 60 * 1000;
 
     await user.save();
 
     const resetLink = `http://localhost:5173/reset-password/${token}`;
 
+    console.log("Sending email...");
+
     await sendResetEmail(email, resetLink);
+
+    console.log("Email sent successfully");
 
     res.json({
       message: "Password reset email sent"
     });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+
+    console.error("FORGOT PASSWORD ERROR:", error);
+
+    res.status(500).json({
+      message: error.message
+    });
+
   }
 };
 
