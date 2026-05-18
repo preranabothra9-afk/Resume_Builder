@@ -111,7 +111,7 @@ export const sendResetEmail = async (email, link) => {
 
     const data = await resend.emails.send({
       from: "onboarding@resend.dev",
-      to: "preranabothra9@gmail.com",
+      to: email,
       subject: "Password Reset",
       html: `
         <h2>Password Reset</h2>
