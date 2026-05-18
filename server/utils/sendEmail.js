@@ -29,11 +29,29 @@ import nodemailer from "nodemailer";
 console.log("EMAIL_USER:", process.env.EMAIL_USER);
 console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "Loaded" : "Missing");
 
+// const transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   auth: {
+//     user: process.env.EMAIL_USER,
+//     pass: process.env.EMAIL_PASS  // 16-char App Password from Google Account settings
+//   }
+// });
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS  // 16-char App Password from Google Account settings
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+//debug
+transporter.verify((error, success) => {
+  if (error) {
+    console.log("SMTP ERROR:", error);
+  } else {
+    console.log("SMTP SERVER READY");
   }
 });
 
@@ -66,7 +84,8 @@ export const sendResetEmail = async (email, link) => {
 
 export const sendVerificationEmail = async (email, token) => {
 
-  const verifyLink = `${process.env.BACKEND_URL}/api/users/verify-email/${token}`;
+  // const verifyLink = `${process.env.BACKEND_URL}/api/users/verify-email/${token}`;
+  const verifyLink = `${process.env.FRONTEND_URL}/verify-email/${token}`;
 
   await transporter.sendMail({
     from: `"Resume Builder" <${process.env.EMAIL_USER}>`,
