@@ -106,7 +106,7 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendResetEmail = async (email, link) => {
-
+  console.log("RESEND FUNCTION CALLED");
   try {
 
     const data = await resend.emails.send({
@@ -122,6 +122,7 @@ export const sendResetEmail = async (email, link) => {
     });
 
     console.log("Email sent:", data);
+    
 
   } catch (error) {
 
