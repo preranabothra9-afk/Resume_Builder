@@ -227,7 +227,7 @@ export const forgotPassword = async (req, res) => {
 
     await user.save();
 
-    const resetLink = `http://localhost:5173/reset-password/${token}`;
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
 
     console.log("Sending email...");
 
@@ -251,36 +251,65 @@ export const forgotPassword = async (req, res) => {
 };
 
 //RESET PASSWORD
+
+// export const resetPassword = async (req, res) => {
+
+//   const { token } = req.params;
+//   const { password } = req.body;
+
+//   if (!password || password.length < 8) {
+//     return res.status(400).json({
+//       message: "Password must be at least 8 characters"
+//     });
+//   }
+//   const user = await User.findOne({
+//     resetToken: token,
+//     resetTokenExpire: { $gt: Date.now() }
+//   });
+
+//   if (!user) {
+//     return res.status(400).json({
+//       message: "Invalid or expired token"
+//     });
+//   }
+
+//   const hashedPassword = await bcrypt.hash(password, 10);
+
+//   user.password = hashedPassword;
+//   user.resetToken = undefined;
+//   user.resetTokenExpire = undefined;
+
+//   await user.save();
+
+//   res.json({
+//     message: "Password updated successfully"
+//   });
+// };
 export const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
 
-  const { token } = req.params;
-  const { password } = req.body;
+    if (!password || password.length < 8) {
+      return res.status(400).json({ message: "Password must be at least 8 characters" });
+    }
 
-  if (!password || password.length < 8) {
-    return res.status(400).json({
-      message: "Password must be at least 8 characters"
+    const user = await User.findOne({
+      resetToken: token,
+      resetTokenExpire: { $gt: Date.now() }
     });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    user.password = await bcrypt.hash(password, 10);
+    user.resetToken = undefined;
+    user.resetTokenExpire = undefined;
+    await user.save();
+
+    res.json({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-  const user = await User.findOne({
-    resetToken: token,
-    resetTokenExpire: { $gt: Date.now() }
-  });
-
-  if (!user) {
-    return res.status(400).json({
-      message: "Invalid or expired token"
-    });
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  user.password = hashedPassword;
-  user.resetToken = undefined;
-  user.resetTokenExpire = undefined;
-
-  await user.save();
-
-  res.json({
-    message: "Password updated successfully"
-  });
 };
