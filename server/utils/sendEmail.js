@@ -151,60 +151,87 @@
 
 // };
 
-import * as Brevo from "@getbrevo/brevo";
-const apiInstance = new Brevo.TransactionalEmailsApi();
+import brevo from "@getbrevo/brevo";
+
+const apiInstance = new brevo.TransactionalEmailsApi();
+
 apiInstance.setApiKey(
-  Brevo.TransactionalEmailsApiApiKeys.apiKey,
+  brevo.TransactionalEmailsApiApiKeys.apiKey,
   process.env.BREVO_API_KEY
 );
+
 export const sendResetEmail = async (email, link) => {
+
   try {
-    const sendSmtpEmail = {
-      sender: {
-        name: "Resume Builder",
-        email: "preranabothra9@gmail.com",
-      },
-      to: [
-        {
-          email: email,
-        },
-      ],
-      subject: "Password Reset",
-      htmlContent: `
-        <h2>Password Reset</h2>
-        <p>Click below to reset your password:</p>
-        <a href="${link}">${link}</a>
-        <p>This link expires in 15 minutes.</p>
-      `,
+
+    const sendSmtpEmail = new brevo.SendSmtpEmail();
+
+    sendSmtpEmail.sender = {
+      name: "Resume Builder",
+      email: "preranabothra9@gmail.com",
     };
+
+    sendSmtpEmail.to = [
+      {
+        email: email,
+      },
+    ];
+
+    sendSmtpEmail.subject = "Password Reset";
+
+    sendSmtpEmail.htmlContent = `
+      <h2>Password Reset</h2>
+      <p>Click below to reset your password:</p>
+      <a href="${link}">${link}</a>
+      <p>This link expires in 15 minutes.</p>
+    `;
+
     const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
 
     console.log("Email sent:", data);
+
   } catch (error) {
 
     console.error("Email sending failed:", error);
     throw error;
+
   }
+
 };
 
 export const sendVerificationEmail = async (email, token) => {
-  const verifyLink = `${process.env.FRONTEND_URL}/verify-email/${token}`;
-  const sendSmtpEmail = {
-    sender: {
+
+  try {
+
+    const verifyLink = `${process.env.FRONTEND_URL}/verify-email/${token}`;
+
+    const sendSmtpEmail = new brevo.SendSmtpEmail();
+
+    sendSmtpEmail.sender = {
       name: "Resume Builder",
       email: "preranabothra9@gmail.com",
-    },
-    to: [
+    };
+
+    sendSmtpEmail.to = [
       {
         email: email,
       },
-    ],
-    subject: "Verify Your Email",
-    htmlContent: `
+    ];
+
+    sendSmtpEmail.subject = "Verify Your Email";
+
+    sendSmtpEmail.htmlContent = `
       <h2>Email Verification</h2>
       <a href="${verifyLink}">${verifyLink}</a>
-    `,
-  };
-  await apiInstance.sendTransacEmail(sendSmtpEmail);
+    `;
+
+    await apiInstance.sendTransacEmail(sendSmtpEmail);
+
+  } catch (error) {
+
+    console.error(error);
+    throw error;
+
+  }
 
 };
