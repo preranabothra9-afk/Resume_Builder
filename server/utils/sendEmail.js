@@ -151,57 +151,60 @@
 
 // };
 
-
-import nodemailer from "nodemailer";
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.BREVO_USER,
-    pass: process.env.BREVO_PASS,
-  },
-});
-
+import Brevo from "@getbrevo/brevo";
+const apiInstance = new Brevo.TransactionalEmailsApi();
+apiInstance.setApiKey(
+  Brevo.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BREVO_API_KEY
+);
 export const sendResetEmail = async (email, link) => {
-
   try {
-
-    const info = await transporter.sendMail({
-      from: '"Resume Builder" <preranabothra9@gmail.com>',
-      to: email,
+    const sendSmtpEmail = {
+      sender: {
+        name: "Resume Builder",
+        email: "preranabothra9@gmail.com",
+      },
+      to: [
+        {
+          email: email,
+        },
+      ],
       subject: "Password Reset",
-      html: `
+      htmlContent: `
         <h2>Password Reset</h2>
         <p>Click below to reset your password:</p>
         <a href="${link}">${link}</a>
         <p>This link expires in 15 minutes.</p>
       `,
-    });
+    };
+    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
 
-    console.log("Email sent:", info.response);
-
+    console.log("Email sent:", data);
   } catch (error) {
 
     console.error("Email sending failed:", error);
     throw error;
-
   }
-
 };
 
 export const sendVerificationEmail = async (email, token) => {
-
   const verifyLink = `${process.env.FRONTEND_URL}/verify-email/${token}`;
-
-  await transporter.sendMail({
-    from: '"Resume Builder" <preranabothra9@gmail.com>',
-    to: email,
+  const sendSmtpEmail = {
+    sender: {
+      name: "Resume Builder",
+      email: "preranabothra9@gmail.com",
+    },
+    to: [
+      {
+        email: email,
+      },
+    ],
     subject: "Verify Your Email",
-    html: `
+    htmlContent: `
       <h2>Email Verification</h2>
       <a href="${verifyLink}">${verifyLink}</a>
     `,
-  });
+  };
+  await apiInstance.sendTransacEmail(sendSmtpEmail);
 
 };
