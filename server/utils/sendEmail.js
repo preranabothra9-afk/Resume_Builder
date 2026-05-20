@@ -101,16 +101,74 @@
 
 // };
 
-import { Resend } from "resend";
+// import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// const resend = new Resend(process.env.RESEND_API_KEY);
+
+// export const sendResetEmail = async (email, link) => {
+//   console.log("RESEND FUNCTION CALLED");
+//   try {
+
+//     const data = await resend.emails.send({
+//       from: "onboarding@resend.dev",
+//       to: email,
+//       subject: "Password Reset",
+//       html: `
+//         <h2>Password Reset</h2>
+//         <p>Click below to reset your password:</p>
+//         <a href="${link}">${link}</a>
+//         <p>This link expires in 15 minutes.</p>
+//       `,
+//     });
+
+//     console.log("Email sent:", data);
+    
+
+//   } catch (error) {
+
+//     console.error("Email sending failed:", error);
+//     throw error;
+
+//   }
+
+// };
+
+// export const sendVerificationEmail = async (email, token) => {
+
+//   const verifyLink = `${process.env.FRONTEND_URL}/verify-email/${token}`;
+
+//   await resend.emails.send({
+//     from: "onboarding@resend.dev",
+//     to: email,
+//     subject: "Verify Your Email",
+//     html: `
+//       <h2>Email Verification</h2>
+//       <p>Click below to verify your email:</p>
+//       <a href="${verifyLink}">${verifyLink}</a>
+//       <p>This link expires in 10 minutes.</p>
+//     `,
+//   });
+
+// };
+
+
+import nodemailer from "nodemailer";
+const transporter = nodemailer.createTransport({
+  host: "smtp-relay.brevo.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.BREVO_USER,
+    pass: process.env.BREVO_PASS,
+  },
+});
 
 export const sendResetEmail = async (email, link) => {
-  console.log("RESEND FUNCTION CALLED");
+
   try {
 
-    const data = await resend.emails.send({
-      from: "onboarding@resend.dev",
+    const info = await transporter.sendMail({
+      from: '"Resume Builder" <preranabothra9@gmail.com>',
       to: email,
       subject: "Password Reset",
       html: `
@@ -121,8 +179,7 @@ export const sendResetEmail = async (email, link) => {
       `,
     });
 
-    console.log("Email sent:", data);
-    
+    console.log("Email sent:", info.response);
 
   } catch (error) {
 
@@ -137,15 +194,13 @@ export const sendVerificationEmail = async (email, token) => {
 
   const verifyLink = `${process.env.FRONTEND_URL}/verify-email/${token}`;
 
-  await resend.emails.send({
-    from: "onboarding@resend.dev",
+  await transporter.sendMail({
+    from: '"Resume Builder" <preranabothra9@gmail.com>',
     to: email,
     subject: "Verify Your Email",
     html: `
       <h2>Email Verification</h2>
-      <p>Click below to verify your email:</p>
       <a href="${verifyLink}">${verifyLink}</a>
-      <p>This link expires in 10 minutes.</p>
     `,
   });
 
