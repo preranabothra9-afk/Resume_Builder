@@ -151,7 +151,7 @@
 
 // };
 
-import Brevo from "@getbrevo/brevo";
+import * as Brevo from "@getbrevo/brevo";
 const apiInstance = new Brevo.TransactionalEmailsApi();
 apiInstance.setApiKey(
   Brevo.TransactionalEmailsApiApiKeys.apiKey,
