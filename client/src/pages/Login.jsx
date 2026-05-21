@@ -76,11 +76,11 @@ const Login = () => {
 
     }, [state]);
   return (
-    <div className='flex items-center justify-center min-h-screen bg-gray-50'>
-        <form onSubmit={handleSubmit} className="w-full max-w-md text-center border border-gray-300/60 rounded-2xl px-8 bg-white">
+    <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30 p-4'>
+        <form onSubmit={handleSubmit} className="w-full max-w-md text-center border border-gray-100 rounded-2xl px-8 py-10 bg-white shadow-xl shadow-gray-100/50">
         {welcomeUser ? (
             <>
-                <h1 className="text-gray-900 text-3xl mt-10 font-medium">
+                <h1 className="text-gray-900 text-3xl font-semibold">
                 Welcome back 👋
                 </h1>
 
@@ -90,8 +90,8 @@ const Login = () => {
             </>
             ) : (
             <>
-                <h1 className="text-gray-900 text-3xl mt-10 font-medium">
-                {state === "login" ? "Login" : "Sign up"}
+                <h1 className="text-gray-900 text-3xl font-semibold">
+                {state === "login" ? "Welcome back" : "Create account"}
                 </h1>
 
                 <p className="text-gray-500 text-sm mt-2">
@@ -100,34 +100,34 @@ const Login = () => {
             </>
             )}
                 {state !== "login" && (
-                    <div className="flex items-center mt-6 w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                        <User2Icon size={16} color='#6B7280' />
-                        <input type="text" name="name" placeholder="Name" className="border-none outline-none ring-0" value={formData.name} onChange={handleChange} required />
+                    <div className="flex items-center mt-6 w-full bg-gray-50 border border-gray-200 h-12 rounded-lg overflow-hidden pl-4 gap-2 focus-within:border-green-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-green-500/20 transition-all">
+                        <User2Icon size={16} className='text-gray-400' />
+                        <input type="text" name="name" placeholder="Name" className="border-none outline-none ring-0 bg-transparent w-full" value={formData.name} onChange={handleChange} required />
                     </div>
                 )}
-                <div className="flex items-center w-full mt-4 bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                    <Mail size={16} color='#6B7280' />
-                    <input type="email" name="email" placeholder="Email id" className="border-none outline-none ring-0" value={formData.email} onChange={handleChange} required />
+                <div className="flex items-center w-full mt-4 bg-gray-50 border border-gray-200 h-12 rounded-lg overflow-hidden pl-4 gap-2 focus-within:border-green-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-green-500/20 transition-all">
+                    <Mail size={16} className='text-gray-400' />
+                    <input type="email" name="email" placeholder="Email address" className="border-none outline-none ring-0 bg-transparent w-full" value={formData.email} onChange={handleChange} required />
                 </div>
-                <div className="flex items-center mt-4 w-full bg-white border border-gray-300/80 h-12 rounded-full overflow-hidden px-6 gap-2 ">
-                    <Lock size={16} color='#6B7280' className='mr-0' />
-                    <input type={showPassword ? "text" : "password"} name="password" placeholder="Password" className="border-none outline-none ring-0 mr-7 " value={formData.password} onChange={handleChange} required />
+                <div className="flex items-center mt-4 w-full bg-gray-50 border border-gray-200 h-12 rounded-lg overflow-hidden px-4 gap-2 focus-within:border-green-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-green-500/20 transition-all">
+                    <Lock size={16} className='text-gray-400' />
+                    <input type={showPassword ? "text" : "password"} name="password" placeholder="Password" className="border-none outline-none ring-0 bg-transparent w-full" value={formData.password} onChange={handleChange} required />
                     
-                    <button type="button" onClick={() => setShowPassword(prev => !prev)}className="text-gray-500 hover:text-gray-700 cursor-pointer">
+                    <button type="button" onClick={() => setShowPassword(prev => !prev)}className="text-gray-400 hover:text-gray-600 cursor-pointer transition-colors">
                         {showPassword ?  <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                 </div>
-                <div className="mt-4 text-left text-green-500">
+                <div className="mt-4 text-right">
                     <button
                         type="button"
                         onClick={() => navigate("/forgot-password")}
-                        className="text-sm text-green-500"
+                        className="text-sm text-green-600 hover:text-green-700 font-medium transition-colors"
                         >
                         Forgot password?
                     </button>
                 </div>
                 {state === "login" && (
-                    <div className="flex items-center gap-2 mt-3 text-sm text-gray-600">
+                    <div className="flex items-center gap-2 mt-4 text-sm text-gray-600">
                         <input
                         type="checkbox"
                         checked={rememberMe}
@@ -140,14 +140,15 @@ const Login = () => {
                             localStorage.removeItem("rememberMe");
                             }
                         }}
+                        className="rounded border-gray-300 text-green-500 focus:ring-green-500"
                         />
-                        <label>Remember Me</label>
+                        <label>Remember me</label>
                     </div>
                 )}
-                <button type="submit" className="mt-2 w-full h-11 rounded-full text-white bg-green-500 hover:opacity-90 transition-opacity">
+                <button type="submit" className="mt-6 w-full h-12 rounded-lg text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all font-medium shadow-md hover:shadow-lg">
                     {state === "login" ? "Login" : "Sign up"}
                 </button>
-                <p onClick={() => setState(prev => prev === "login" ? "register" : "login")} className="text-gray-500 text-sm mt-3 mb-11">{state === "login" ? "Don't have an account?" : "Already have an account?"} <a href="#" className="text-green-500 hover:underline">click here</a></p>
+                <p onClick={() => setState(prev => prev === "login" ? "register" : "login")} className="text-gray-500 text-sm mt-5 mb-2 cursor-pointer">{state === "login" ? "Don't have an account?" : "Already have an account?"} <span className="text-green-600 hover:text-green-700 font-medium transition-colors">{state === "login" ? "Sign up" : "Login"}</span></p>
             </form>
     </div>
   )

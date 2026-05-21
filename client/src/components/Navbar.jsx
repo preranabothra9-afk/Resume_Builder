@@ -15,14 +15,14 @@ const Navbar = () => {
   }
 
   return (
-    <div className='shadow bg-white'>
-      <nav className='flex items-center justify-between max-w-7xl mx-auto py-3.5 px-4 text-slate-800 transition-all'>
-        <Link to='/'>
-            <img src="/logo.svg" alt="logo" className='h-11 w-auto' />
+    <div className='sticky top-0 z-40 glass shadow-sm'>
+      <nav className='flex items-center justify-between max-w-7xl mx-auto py-3 px-4 text-slate-800'>
+        <Link to='/' className='hover:opacity-80 transition-opacity'>
+            <img src="/logo.svg" alt="logo" className='h-10 w-auto' />
         </Link>
-        <div className='flex items-center gap-4 text-sm'>
-          <p className='max-sm:hidden'>Hi, {user?.name}</p>
-          <button onClick={logoutUser} className='bg-white hover:bg-slate-50 border border-gray-300 px-7 py-1.5 rounded-full active:scale-95 transition-all'>Logout</button>
+        <div className='flex items-center gap-5 text-sm'>
+          <p className='max-sm:hidden text-slate-600 font-medium'>Hi, <span className='text-slate-800'>{user?.name}</span></p>
+          <button onClick={logoutUser} className='bg-white hover:bg-red-50 hover:text-red-600 border border-gray-200 hover:border-red-200 px-6 py-2 rounded-full active:scale-95 transition-all duration-200 font-medium shadow-sm'>Logout</button>
         </div>
       </nav>
     </div>

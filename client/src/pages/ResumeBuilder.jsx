@@ -225,56 +225,67 @@ const ResumeBuilder = () => {
   return (
     <div>
         <div className='max-w-7xl mx-auto px-4 py-6'>
-          <Link to='/app' className='inline-flex gap-2 items-center text-slate-500 hover:text-slate-700 transition-all'>
+          <Link to='/app' className='inline-flex gap-2 items-center text-slate-500 hover:text-green-600 transition-colors font-medium'>
             <ArrowLeftIcon className='size-4' />Back to Dashboard
           </Link>
         </div>
 
-        <div className='max-w-7xl mx-auto px-4 pb-8'>
+        <div className='max-w-7xl mx-auto px-4 pb-10'>
           <div className='grid lg:grid-cols-12 gap-8'>
             {/*Left panel ---> form*/}
-            <div className='relative lg:col-span-5 rounded-lg overflow-hidden'>
-              <div className='bg-white rounded-lg shadow-sm border border-gray200 p-6 pt-1'>
+            <div className='relative lg:col-span-5'>
+              <div className='bg-white rounded-xl shadow-sm border border-gray-100 p-6 pt-4 card-hover'>
                 {/*Progress Bar using active section*/}
                 
-                <hr className='absolute top-0 left-0 right-0 border-2 border-gray-200' />
-                <hr className='absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-green-500 to-green-600 border-none transition-all duration-2000' style={{width: `${activeSectionIndex * 100 / (sections.length-1)}%`}} />
+                <div className='absolute top-0 left-0 right-0 h-1 bg-gray-100 rounded-t-xl overflow-hidden'>
+                  <div className='h-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-500 rounded-r-full' style={{width: `${((activeSectionIndex + 1) / sections.length) * 100}%`}} />
+                </div>
 
                 {/*Section navigation*/}
-                <div className='flex justify-between items-center mb-6 border-b border-gray-300 py-1'>
+                <div className='flex justify-between items-center mb-6 pb-4 border-b border-gray-100'>
 
-                  <div className='flex items-center gap-2' >
+                  <div className='flex items-center gap-3' >
                     <TemplateSelector selectedTemplate={resumeData.template} onChange={(template) => setResumeData(prev =>({...prev, template}))} />
                     
                     <ColorPicker selectedColor={resumeData.accent_color} onChange={(color) => setResumeData(prev => ({...prev, accent_color:color}))} />
                   </div>
 
-                  <div className='text-xs min-w-17.5 text-right'>
+                  <div className='text-xs min-w-17.5 text-right font-medium'>
                     {savingStatus === "saving" && (
-                      <span className='text-xs text-gray-500'>Saving...</span>
+                      <span className='text-slate-400 flex items-center gap-1 justify-end'>
+                        <LoaderCircleIcon className='size-3 animate-spin' /> Saving...
+                      </span>
                     )}
                     {savingStatus === "saved" && (
-                      <span className='text-xs text-green-600'>Saved ✓</span>
+                      <span className='text-green-600 flex items-center gap-1 justify-end'>Saved</span>
                     )}
-                    {/* navigation buttons */}
-                  </div>
-
-                  <div className='flex items-center'>
-                     {activeSection && (
-                      <button onClick={() => setActiveSectionIndex((prevIndex) => Math.max(prevIndex-1, 0))} className='flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all' disabled={activeSectionIndex===0}>
-                        <ChevronLeft className='size-4' /> Previous
-                      </button>
-                     )}
-
-                     <button onClick={() => setActiveSectionIndex((prevIndex) => Math.min(prevIndex+1, sections.length-1))} className={`flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all ${activeSectionIndex=== sections.length-1 && 'opacity-50'}`} disabled={activeSectionIndex===sections.length-1}>
-                        Next <ChevronRight className='size-4' />
-                     </button>
-
                   </div>
                 </div>
 
+                {/* Section tabs */}
+                <div className='flex gap-1 mb-6 overflow-x-auto pb-2 scrollbar-hide'>
+                  {sections.map((section, index) => {
+                    const Icon = section.icon;
+                    const isActive = index === activeSectionIndex;
+                    return (
+                      <button
+                        key={section.id}
+                        onClick={() => setActiveSectionIndex(index)}
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-200 ${
+                          isActive 
+                            ? 'bg-green-50 text-green-700 shadow-sm' 
+                            : 'text-slate-500 hover:bg-gray-50 hover:text-slate-700'
+                        }`}
+                      >
+                        <Icon className='size-3.5' />
+                        <span className='max-sm:hidden'>{section.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
                 {/* Form content */}
-                <div className='space-y-6'>
+                <div className='space-y-6 min-h-[300px]'>
                      {activeSection.id ==='personal' &&(
                       <PersonalInfoForm  data={resumeData.personal_info} onChange={(data)=>{
                         setIsEditing(true);
@@ -326,80 +337,79 @@ const ResumeBuilder = () => {
                       error: "Failed to save"
                     })
                   }
-                className='bg-linear-to-br from green-100 to-green-200 ring-green-300 text-green-600 ring hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm'>
+                className='w-full bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-medium shadow-md hover:shadow-lg px-6 py-3 mt-6'>
                   Save Changes
                 </button>
               </div>
             </div>
 
-            {/*Right panel ---> form*/}
+            {/*Right panel ---> preview*/}
             <div className='lg:col-span-7 max-lg:mt-6'>
                 <div className='relative w-full'>
-                  <div className='absolute bottom-3 left-0 right-0 flex items-center justify-end gap-2'>
+                  <div className='absolute -top-12 right-0 flex items-center gap-2'>
                      {resumeData.public && (
-                      <button onClick={handleShare} className='flex items-center p-2 px-4 gap-2 text-xs bg-linear-to-br from-blue-100 to-blue-200 text-blue-600 rounded-lg ring-blue-300 hover:ring transition-colors '>
-                        <Share2Icon className='size-4' /> Share
+                      <button onClick={handleShare} className='flex items-center p-2 px-4 gap-2 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium shadow-sm'>
+                        <Share2Icon className='size-3.5' /> Share
                       </button>
                      )}
-                     <button onClick={changeResumeVisibility} className='flex items-center p-2 px-4 gap-2 text-xs bg-linear-to-br from-purple-100 to-purple-200 text-purple-600 ring-purple-300 rounded-lg hover:ring transition-colors'>
-                      {resumeData.public ? <EyeIcon className='size-4' /> : <EyeOff className='size-4' />}
+                     <button onClick={changeResumeVisibility} className='flex items-center p-2 px-4 gap-2 text-xs bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors font-medium shadow-sm'>
+                      {resumeData.public ? <EyeIcon className='size-3.5' /> : <EyeOff className='size-3.5' />}
                       {resumeData.public ? 'Public' : 'Private'}
                      </button>
 
-                     <button onClick={() => setShowExport(true)} className='flex items-center p-2 px-4 gap-2 text-xs bg-linear-to-br from-green-100 to-green-200 text-green-600 ring-green-300 rounded-lg hover:ring transition-colors'>
-                      <DownloadIcon className='size-4' />
+                     <button onClick={() => setShowExport(true)} className='flex items-center p-2 px-4 gap-2 text-xs bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors font-medium shadow-sm'>
+                      <DownloadIcon className='size-3.5' />
                       Export 
                      </button>
                   </div>  
                 </div>
 
                 {resumeData &&(
-                  <ResumePreview 
-                  data={resumeData} 
-                  template={resumeData.template} 
-                  accentColor={resumeData.accent_color} />
+                  <div className='rounded-xl shadow-sm border border-gray-100 overflow-hidden'>
+                    <ResumePreview 
+                    data={resumeData} 
+                    template={resumeData.template} 
+                    accentColor={resumeData.accent_color} />
+                  </div>
                 )}
 
-                <div className="mt-6">
+                <div className="mt-8">
                   <ResumeAnalytics analytics={resumeData} />
-                  {/* <ATSAnalyzer
-                    analyzeATS={analyzeATS}
-                    result={atsResult}/> */}
                 </div>
             </div>
           </div>
         </div>
         {showExport && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-            <div className="bg-white p-6 rounded-lg w-80">
-              <h2 className="text-lg font-semibold mb-4">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowExport(false)}>
+            <div className="bg-white p-7 rounded-xl w-80 shadow-2xl border border-gray-100 card-hover" onClick={e => e.stopPropagation()}>
+              <h2 className="text-lg font-semibold mb-5 text-slate-800">
                 Export Resume
               </h2>
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => exportResume("pdf")}
-                  className="border p-2 rounded hover:bg-gray-100">
+                  className="border border-gray-200 p-3 rounded-lg hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-all text-sm font-medium">
                   Export as PDF
                 </button>
                 <button
                   onClick={() => exportResume("docx")}
-                  className="border p-2 rounded hover:bg-gray-100">
+                  className="border border-gray-200 p-3 rounded-lg hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all text-sm font-medium">
                   Export as DOCX
                 </button>
                 <button
                   onClick={() => exportResume("json")}
-                  className="border p-2 rounded hover:bg-gray-100">
+                  className="border border-gray-200 p-3 rounded-lg hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 transition-all text-sm font-medium">
                   Export as JSON
                 </button>
                 <button
                   onClick={() => exportResume("html")}
-                  className="border p-2 rounded hover:bg-gray-100">
+                  className="border border-gray-200 p-3 rounded-lg hover:bg-orange-50 hover:border-orange-200 hover:text-orange-700 transition-all text-sm font-medium">
                   Export as HTML Portfolio
                 </button>
               </div>
               <button
                 onClick={() => setShowExport(false)}
-                className="mt-4 text-sm text-gray-500">
+                className="mt-5 text-sm text-slate-500 hover:text-slate-700 font-medium transition-colors w-full py-2 rounded-lg hover:bg-gray-50">
                 Cancel
               </button>
 

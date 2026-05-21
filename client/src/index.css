@@ -1,19 +1,55 @@
-@import url('https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&family=Dancing+Script:wght@400..700&family=Outfit:wght@100..900&family=Tektur:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&family=Dancing+Script:wght@400..700&family=Outfit:wght@100..900&family=Tektur:wght@400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
 *{
     font-family: "Tektur", sans-serif;
+    scroll-behavior: smooth;
 }
 
 @layer base {
     button{
-        @apply cursor-pointer;
+        @apply cursor-pointer transition-all duration-200;
     }
     input:not([type= "checkbox"]){
-        @apply outline-none focus:ring border border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-lg;
+        @apply outline-none focus:ring-2 border border-gray-200 focus:ring-green-500/20 focus:border-green-500 rounded-lg transition-all duration-200 bg-white;
     }
     textarea{
-        @apply outline-none focus:ring border border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-lg resize-none;
+        @apply outline-none focus:ring-2 border border-gray-200 focus:ring-green-500/20 focus:border-green-500 rounded-lg resize-none transition-all duration-200 bg-white;
     }
+    select{
+        @apply outline-none focus:ring-2 border border-gray-200 focus:ring-green-500/20 focus:border-green-500 rounded-lg transition-all duration-200 bg-white;
+    }
+}
+
+@layer utilities {
+    .glass {
+        @apply bg-white/80 backdrop-blur-xl border border-white/20;
+    }
+    .glass-dark {
+        @apply bg-black/5 backdrop-blur-xl border border-white/10;
+    }
+    .card-hover {
+        @apply hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300;
+    }
+    .text-balance {
+        text-wrap: balance;
+    }
+}
+
+body {
+    @apply bg-gray-50/50 text-slate-800 antialiased;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full hover:bg-gray-400 transition-colors;
 }

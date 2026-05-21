@@ -1,15 +1,21 @@
 import React from 'react'
 import { Link } from "react-router-dom";
+import { ArrowRight } from 'lucide-react';
 
 const CallToAction = () => {
   return (
-    <div id='cta' className='border-y border-dashed border-slate-200 w-full max-w-5xl mx-auto px-10 sm:px-16 mt-28'>
-        <div className="flex flex-col md:flex-row text-center md:text-left items-center justify-between gap-8 px-3 md:px-10 border-x border-dashed border-slate-200 py-16 sm:py-20 -mt-10 -mb-10 w-full">
-            <p className="text-xl font-medium max-w-md text-slate-800">Build A Professional Resume That Helps You Stand Out and Get Hired.</p>
-            <Link to="/app?state=register" className="flex items-center gap-2 rounded py-3 px-8 bg-green-600 hover:bg-green-700 transition text-white">
-                <span>Get Started</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-4.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </Link>
+    <div id='cta' className='w-full max-w-5xl mx-auto px-6 mt-24'>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-500 to-green-700 px-8 py-16 sm:px-16 text-center">
+            <div className="absolute top-0 right-0 -z-0 size-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+            <div className="absolute bottom-0 left-0 -z-0 size-48 bg-white/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+            
+            <div className="relative z-10 flex flex-col items-center gap-8">
+                <h2 className="text-2xl sm:text-3xl font-semibold text-white max-w-lg leading-tight">Build a professional resume that helps you stand out and get hired.</h2>
+                <Link to="/app?state=register" className="flex items-center gap-2 rounded-lg py-3.5 px-8 bg-white text-green-600 hover:bg-gray-50 transition-all font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                    <span>Get Started Free</span>
+                    <ArrowRight className="size-4" />
+                </Link>
+            </div>
         </div>
     </div>
   )
