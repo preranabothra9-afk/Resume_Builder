@@ -1,22 +1,7 @@
-import {
-  BriefcaseBusiness,
-  Linkedin,
-  MapPin,
-  Phone,
-  User,
-  Globe,
-  Mail
-} from "lucide-react";
+import { BriefcaseBusiness, Linkedin, MapPin, Phone, User, Globe, Mail, ImagePlus } from "lucide-react";
 import React from "react";
 
-const PersonalInfoForm = ({
-  data,
-  onChange,
-  removeBackground,
-  setRemoveBackground,
-  savingStatus,
-  setIsEditing
-}) => {
+const PersonalInfoForm = ({ data, onChange, removeBackground, setRemoveBackground, savingStatus, setIsEditing }) => {
 
   const handleChange = (field, value) => {
     onChange({ ...data, [field]: value });
@@ -34,97 +19,55 @@ const PersonalInfoForm = ({
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-gray-900">Personal Info</h3>
-      <p className="text-sm text-gray-600">
-        Get started with the personal information.
-      </p>
-
-      {/* Image Upload Section */}
-      <div className="flex items-center gap-4 mt-5">
-        <label className="cursor-pointer">
+      <div className="flex items-center gap-5">
+        <label className="cursor-pointer group">
           {data.image ? (
-            <img
-              src={
-                typeof data.image === "string"
-                  ? data.image
-                  : URL.createObjectURL(data.image)
-              }
+            <img src={typeof data.image === "string" ? data.image : URL.createObjectURL(data.image)}
               alt="user"
-              className="w-16 h-16 rounded-full object-cover ring ring-slate-300 hover:opacity-80 transition"
-            />
+              className="size-16 rounded-xl object-cover ring-2 ring-white/10 group-hover:ring-violet-500/50 transition-all" />
           ) : (
-            <div className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-700">
-              <User className="size-10 p-2.5 border rounded-full" />
-              Upload user image
+            <div className="size-16 rounded-xl border-2 border-dashed border-white/10 flex items-center justify-center text-white/30 group-hover:border-violet-500/40 group-hover:text-violet-400 transition-all">
+              <ImagePlus className="size-6" />
             </div>
           )}
-
-          <input
-            type="file"
-            accept="image/jpeg, image/png"
-            className="hidden"
-            onChange={(e) =>
-              handleChange("image", e.target.files[0])
-            }
-          />
+          <input type="file" accept="image/jpeg, image/png" className="hidden"
+            onChange={(e) => handleChange("image", e.target.files[0])} />
         </label>
 
-        {/* ✅ Remove Background Toggle (FIXED CONDITION) */}
-        {data.image && (
-          <div>
-            <p className="text-sm text-gray-700 mb-1">
-              Remove Background
-            </p>
-            <label className="relative inline-flex items-center cursor-pointer gap-3">
-              <input
-                type="checkbox"
-                className="sr-only peer"
-                onChange={() =>{
-                  setRemoveBackground((prev) => !prev);
-                  setIsEditing(true);
-                }}
-                checked={removeBackground}
-                disabled={savingStatus === "saving"}
-              />
-              <div className="w-9 h-5 bg-slate-300 rounded-full peer-checked:bg-green-600 transition-colors duration-200"></div>
-              <span className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-4"></span>
+        <div>
+          <p className="text-sm font-medium text-white/70">Profile Photo</p>
+          <p className="text-xs text-white/30">Upload your photo</p>
+          {data.image && (
+            <label className="inline-flex items-center gap-2 mt-1.5 cursor-pointer">
+              <input type="checkbox" className="sr-only peer"
+                onChange={() => { setRemoveBackground((prev) => !prev); setIsEditing(true); }}
+                checked={removeBackground} disabled={savingStatus === "saving"} />
+              <div className="w-8 h-4 bg-white/10 rounded-full peer-checked:bg-violet-600 transition-colors relative">
+                <span className="absolute left-0.5 top-0.5 w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-4" />
+              </div>
+              <span className="text-xs text-white/40">Remove bg</span>
             </label>
-            {savingStatus === "saving" && removeBackground && (
-              <p className="text-xs text-gray-400 mt-1">
-                Removing background...
-              </p>
-            )}      
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      {/* Input Fields */}
-      {fields.map((field) => {
-        const Icon = field.icon;
-
-        return (
-          <div key={field.key} className="space-y-1 mt-5">
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-600">
-              <Icon className="size-4" />
-              {field.label}
-              {field.required && (
-                <span className="text-red-500">*</span>
-              )}
-            </label>
-
-            <input
-              type={field.type}
-              value={data[field.key] || ""}
-              onChange={(e) =>
-                handleChange(field.key, e.target.value)
-              }
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-sm"
-              placeholder={`Enter your ${field.label.toLowerCase()}`}
-              required={field.required}
-            />
-          </div>
-        );
-      })}
+      <div className="mt-6 space-y-4">
+        {fields.map((field) => {
+          const Icon = field.icon;
+          return (
+            <div key={field.key}>
+              <label className="flex items-center gap-1.5 text-xs font-medium text-white/50 mb-1.5">
+                <Icon className="size-3.5 text-white/30" />
+                {field.label}
+                {field.required && <span className="text-rose-400">*</span>}
+              </label>
+              <input type={field.type} value={data[field.key] || ""}
+                onChange={(e) => handleChange(field.key, e.target.value)}
+                placeholder={`Enter ${field.label.toLowerCase()}`} required={field.required} />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

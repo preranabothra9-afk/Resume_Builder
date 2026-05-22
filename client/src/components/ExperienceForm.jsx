@@ -5,138 +5,99 @@ import api from '../configs/api';
 import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 
-const ExperienceForm = ({data, onChange}) => {
+const ExperienceForm = ({ data, onChange }) => {
 
-    const {token} = useSelector(state => state.auth);
-    const [generatingIndex, setGeneratingIndex] = useState(-1);
+  const { token } = useSelector(state => state.auth);
+  const [generatingIndex, setGeneratingIndex] = useState(-1);
 
+  const addExperience = () => {
+    onChange([...data, { company: "", position: "", start_date: "", end_date: "", description: "", is_current: false }])
+  }
 
-    const addExperience = () =>{
-        const newExperience ={
-            company:"",
-            position:"",
-            start_date:"",
-            end_date:"",
-            description:"",
-            is_current:false
-        }
-        onChange([...data, newExperience])
+  const removeExperience = (index) => {
+    onChange(data.filter((_, i) => i !== index));
+  }
+
+  const updateExperience = (index, field, value) => {
+    const updated = [...data];
+    updated[index] = { ...updated[index], [field]: value }
+    onChange(updated)
+  }
+
+  const generateDescription = async (index) => {
+    setGeneratingIndex(index);
+    const experience = data[index];
+    const prompt = `Improve the following job description for a resume.\n\nRole: ${experience.position}\nCompany: ${experience.company}\n\nCurrent Description:\n${experience.description}\n\nMake it professional, concise and achievement oriented.`;
+    try {
+      const response = await api.post('/api/ai/enhance-job-desc', { userContent: prompt }, { headers: { Authorization: token } });
+      updateExperience(index, "description", response.data.enhancedContent);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    } finally {
+      setGeneratingIndex(-1);
     }
-
-    const removeExperience = (index) =>{
-        const updated = data.filter((_,i) => i!==index);
-        onChange(updated)
-    }
-
-    const updateExperience = (index, field, value) =>{
-        const updated = [...data];
-        updated[index] = {...updated[index], [field]:value}
-        onChange(updated)
-    }
-
-    const generateDescription = async (index) => {
-        setGeneratingIndex(index);
-        const experience = data[index];
-        const prompt = `
-            Improve the following job description for a resume.
-
-            Role: ${experience.position}
-            Company: ${experience.company}
-
-            Current Description:
-            ${experience.description}
-
-            Make it professional, concise and achievement oriented.`;
-
-        try {
-            const response = await api.post(
-                '/api/ai/enhance-job-desc',
-                { userContent: prompt },
-                { headers: { Authorization: token } }
-                );
-
-            updateExperience(index, "description", response.data.enhancedContent);
-        }catch (error) {
-            console.log(error);
-            console.log(error.response);
-            toast.error(error.response?.data?.message || "Something went wrong");
-        }
-        finally{
-            setGeneratingIndex(-1);
-        }
-    }
+  }
 
   return (
-    <div className='space-y-6'>
-            <div className='flex items-center justify-between'>
-                <div>
-                    <h3 className='flex items-center gap-2 text-lg font-semibold text-gray-900'> Professional Experience </h3>
-                    <p className='text-sm text-gray-500'>Add your job experience.</p>
-                </div>
-                <button onClick={addExperience} className='flex items-center gap-2 px-3 py-1 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors'>
-                    <Plus className='size-4' />
-                    Add Experience
-                </button>
-            </div>
+    <div className='space-y-4'>
+      <div className='flex items-center justify-between'>
+        <p className='text-sm text-white/40'>Add your work experience.</p>
+        <button onClick={addExperience}
+          className='flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-violet-500/15 text-violet-300 hover:bg-violet-500/25 transition-colors border border-violet-500/20'>
+          <Plus className='size-3.5' /> Add
+        </button>
+      </div>
 
-            {data.length===0 ? (
-                <div className='text-center py-8 text-gray-500'>
-                    <Briefcase className='w-12 h-12 mx-auto mb-3 text-gray-300' />
-                    <p>No experience added yet.</p>
-                    <p className='text-sm'>Click "Add Experience"to get started.</p>
-                </div>
-            ) : (
-                <div className='space-y-4'>
-                    {data.map((experience, index) =>(
-                        <div key={index} className='p-4 border border-gray-200 rounded-lg space-y-3'>
-                            <div className='flex justify-between items-start'>
-                                <h4>Experience #{index+1}</h4>
-                                <button onClick={() => removeExperience(index)} className='text-red-500 hover:text-red-700 transition-colors'>
-                                    <Trash2 className='size-4' />
-                                </button>
-                            </div>
-
-                            <div className='grid md:grid-cols-2 gap-3'>
-                                <input value={experience.company || ""} onChange={(e)=>updateExperience(index, "company", e.target.value)} 
-                                type="text" placeholder='Company Name' className='px-3 py-2 text-sm rounded-lg' />
-
-                                <input value={experience.position || ""} onChange={(e)=>updateExperience(index, "position", e.target.value)} 
-                                type="text" placeholder='Job Title' className='px-3 py-2 text-sm rounded-lg' />
-
-                                <input value={experience.start_date || ""} onChange={(e)=>updateExperience(index, "start_date", e.target.value)} 
-                                type="month" className='px-3 py-2 text-sm rounded-lg' />
-
-                                <input value={experience.end_date || ""} onChange={(e)=>updateExperience(index, "end_date", e.target.value)} 
-                                type="month" disabled={experience.is_current} className='px-3 py-2 text-sm rounded-lg disabled:bg-gray-100' />
-                                
-                            </div>
-
-                            <label className='flex items-center gap-2'>
-                                <input type="checkbox" checked={experience.is_current || false} onChange={(e)=>{updateExperience(index, "is_current", e.target.checked ? true : false); }} className='rounded border-gray-300 text-blue-600 focus:ring-blue-500' />
-                                <span className='text-sm text-gray-700'>Currently working here.</span>
-                            </label>
-
-                            <div className='space-y-2'>
-                                <div className='flex items-center justify-between'>
-                                    <label className='text-sm font-medium text-gray-700'>Job Description</label>
-                                    <button onClick={()=> generateDescription(index)} disabled={generatingIndex === index || !experience.position || !experience.company || !experience.description} className='flex items-center gap-1 px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors disabled:opacity-50'>
-                                        {generatingIndex === index ? (
-                                            <Loader2 className='w-3 h-3 animate-spin' />
-                                        ): (
-                                            <Sparkles className='h-3 w-3' />
-                                        )}
-                                        
-                                        Enhance with AI
-                                    </button>
-                                </div>
-                                <textarea value={experience.description || ""} onChange={(e) => updateExperience(index, "description", e.target.value)} rows={4} className='w-full text-sm px-3 py-2 rounded-lg resize-none' placeholder='Describe your key responsibilities and achievements...' />
-                            </div>
-
-                        </div>
-                    ))}
-                </div>
-            )}
+      {data.length === 0 ? (
+        <div className='text-center py-10 text-white/20'>
+          <Briefcase className='size-10 mx-auto mb-3 text-white/10' />
+          <p className='text-sm font-medium text-white/30'>No experience added</p>
+          <p className='text-xs mt-1'>Click "Add" to get started.</p>
         </div>
+      ) : (
+        <div className='space-y-3'>
+          {data.map((experience, index) => (
+            <div key={index} className='p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] space-y-3'>
+              <div className='flex items-center justify-between'>
+                <span className='text-xs font-medium text-white/20'>#{index + 1}</span>
+                <button onClick={() => removeExperience(index)}
+                  className='text-rose-400/60 hover:text-rose-400 transition-colors p-1 hover:bg-rose-500/10 rounded-lg'>
+                  <Trash2 className='size-3.5' />
+                </button>
+              </div>
+
+              <div className='grid md:grid-cols-2 gap-3'>
+                <input value={experience.company || ""} onChange={(e) => updateExperience(index, "company", e.target.value)} type="text" placeholder='Company' />
+                <input value={experience.position || ""} onChange={(e) => updateExperience(index, "position", e.target.value)} type="text" placeholder='Job Title' />
+                <input value={experience.start_date || ""} onChange={(e) => updateExperience(index, "start_date", e.target.value)} type="month" />
+                <input value={experience.end_date || ""} onChange={(e) => updateExperience(index, "end_date", e.target.value)} type="month" disabled={experience.is_current} />
+              </div>
+
+              <label className='flex items-center gap-2 cursor-pointer'>
+                <input type="checkbox" checked={experience.is_current || false}
+                  onChange={(e) => { updateExperience(index, "is_current", e.target.checked); }}
+                  className='rounded border-white/20 bg-white/5 text-violet-600 focus:ring-violet-500 size-4' />
+                <span className='text-xs text-white/50'>Currently working here</span>
+              </label>
+
+              <div className='space-y-2'>
+                <div className='flex items-center justify-between'>
+                  <label className='text-xs font-medium text-white/50'>Description</label>
+                  <button onClick={() => generateDescription(index)}
+                    disabled={generatingIndex === index || !experience.position || !experience.company || !experience.description}
+                    className='flex items-center gap-1 px-2 py-1 text-xs rounded-lg bg-violet-500/15 text-violet-300 hover:bg-violet-500/25 transition-colors disabled:opacity-50 border border-violet-500/20'>
+                    {generatingIndex === index ? <Loader2 className='size-3 animate-spin' /> : <Sparkles className='size-3' />}
+                    AI Enhance
+                  </button>
+                </div>
+                <textarea value={experience.description || ""} onChange={(e) => updateExperience(index, "description", e.target.value)} rows={4}
+                  className='w-full resize-none bg-white/[0.02]' placeholder='Describe your responsibilities...' />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 

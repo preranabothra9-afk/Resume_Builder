@@ -1,45 +1,48 @@
 import { Check, Palette } from 'lucide-react'
 import React, { useState } from 'react'
 
-const ColorPicker = ({selectedColor, onChange}) => {
+const ColorPicker = ({ selectedColor, onChange }) => {
 
-    const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
-    const colors=[
-        {name:"Blue", value:"#3B82F6"},
-        {name:"Indigo", value:"#6366F1"},
-        {name:"Purple", value:"#8B5CF6"},
-        {name:"Green", value:"#10B981"},
-        {name:"Red", value:"#EF4444"},
-        {name:"Orange", value:"#F97316"},
-        {name:"Teal", value:"#14B8A6"},
-        {name:"Pink", value:"#EC4899"},
-        {name:"Gray", value:"#6B7280"},
-        {name:"Black", value:"#1F2937"},
-    ]
+  const colors = [
+    { name: "Violet", value: "#8B5CF6" },
+    { name: "Indigo", value: "#6366F1" },
+    { name: "Blue", value: "#3B82F6" },
+    { name: "Cyan", value: "#06B6D4" },
+    { name: "Emerald", value: "#10B981" },
+    { name: "Amber", value: "#F59E0B" },
+    { name: "Orange", value: "#F97316" },
+    { name: "Rose", value: "#F43F5E" },
+    { name: "Pink", value: "#EC4899" },
+    { name: "Slate", value: "#64748B" },
+  ]
+
   return (
     <div className='relative'>
-        <button onClick={()=> setIsOpen(!isOpen)} className='flex items-center gap-1 text-sm text-purple-600 bg-linear-to-r from-purple-50 to-purple-100 ring-purple-300 hover:ring transition-all px-3 py-2 rounded-lg'>
-            <Palette size={16} /> <span className='max-sm:hidden'>Accent</span>
-        </button>
+      <button onClick={() => setIsOpen(!isOpen)}
+        className='flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl border border-white/10 text-white/50 hover:text-violet-300 hover:border-violet-500/30 hover:bg-violet-500/10 transition-all'>
+        <Palette size={14} /> Accent
+      </button>
 
-        {isOpen && (
-            <div className='grid grid-cols-4 w-60 gap-2 absolute top-full left-0 right-0 p-3 mt-2 z-50 bg-white rounded-md borer border-gray-200 shadow-sm'>
-                {colors.map((color) =>(
-                    <div key={color.value} className='relative cursor-pointer group flex flex-col' onClick={()=> {onChange(color.value); setIsOpen(false)}}>
-                        <div className='w-12 h-12 rounded-full border-2 border-transparent group-hover:border-black/25 transition-colors' style={{background: color.value}}>
-                        </div>
-
-                    {selectedColor === color.value && (
-                        <div className='absolute top-0 left-0 right-0 botton-4.5 flex items-center justify-center'>
-                            <Check className='size-5 text-white'/>
-                        </div>
-                    )}
-                    <p className='text-xs text-center mt-1 text-gray-600'>{color.name}</p>
-                    </div>
-                ))}
+      {isOpen && (
+        <div className='absolute top-full right-0 grid grid-cols-5 gap-1.5 w-56 p-2.5 mt-1.5 z-50 bg-[#12121a] border border-white/[0.08] rounded-xl shadow-2xl shadow-black/50'>
+          {colors.map((color) => (
+            <div key={color.value}
+              className='relative cursor-pointer group flex flex-col items-center'
+              onClick={() => { onChange(color.value); setIsOpen(false) }}>
+              <div className='size-9 rounded-lg border-2 border-transparent group-hover:border-white/30 transition-all'
+                style={{ background: color.value }} />
+              {selectedColor === color.value && (
+                <div className='absolute inset-0 flex items-center justify-center'>
+                  <Check className='size-5 text-white drop-shadow-lg' />
+                </div>
+              )}
+              <p className='text-[10px] text-center mt-1 text-white/40'>{color.name}</p>
             </div>
-        )}
+          ))}
+        </div>
+      )}
     </div>
   )
 }
