@@ -11,9 +11,9 @@ const Hero = () => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#08080f]">
       {/* Animated gradient orbs */}
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-violet-600/20 via-fuchsia-600/10 to-transparent blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-cyan-600/20 via-blue-600/10 to-transparent blur-[120px] animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
-      <div className="absolute top-[40%] right-[20%] w-[30%] h-[30%] rounded-full bg-gradient-to-br from-amber-600/10 via-orange-600/10 to-transparent blur-[100px] animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
+      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-linear-to-br from-violet-600/20 via-fuchsia-600/10 to-transparent blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-linear-to-br from-cyan-600/20 via-blue-600/10 to-transparent blur-[120px] animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+      <div className="absolute top-[40%] right-[20%] w-[30%] h-[30%] rounded-full bg-linear-to-br from-amber-600/10 via-orange-600/10 to-transparent blur-[100px] animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
 
       {/* Grid overlay */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAwaDQwdjQwSDB6IiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==')] opacity-50" />
@@ -66,7 +66,7 @@ const Hero = () => {
       <div className="relative flex flex-col items-center justify-center px-4 md:px-16 lg:px-24 xl:px-40 pt-20 pb-32">
 
         {/* Social proof */}
-        <div className="flex items-center gap-4 px-5 py-2.5 bg-white/[0.04] backdrop-blur-xl rounded-full border border-white/[0.06]">
+        <div className="flex items-center gap-4 px-5 py-2.5 bg-white/4 backdrop-blur-xl rounded-full border border-white/6">
           <div className="flex -space-x-2">
             {['https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100', 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100', 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100'].map((src, i) => (
               <img key={i} src={src} alt="" className="size-7 object-cover rounded-full border-2 border-[#08080f]" />
@@ -94,7 +94,7 @@ const Hero = () => {
 
         {/* CTA */}
         <Link to='/app'
-          className="gradient-btn rounded-xl px-9 h-13 flex items-center gap-2 text-base shadow-2xl shadow-violet-500/30 hover:shadow-violet-500/50 glow text-lg font-medium">
+          className="gradient-btn rounded-xl px-9 h-13 flex items-center gap-2 text-lg shadow-2xl shadow-violet-500/30 hover:shadow-violet-500/50 glow font-medium">
           Get started free
           <ArrowRight className="size-5" />
         </Link>
