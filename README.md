@@ -2,7 +2,7 @@
 
 ### A full-stack AI-powered Resume Builder web application that allows users to create, edit, preview, and manage professional resumes with authentication, email verification, password reset, and AI-assisted resume generation.
 
-### 🌟 Features
+## 🌟 Features
 
 ##### 🔐 Authentication System
 - User Registration & Login
