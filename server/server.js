@@ -13,12 +13,8 @@ const port = process.env.PORT || 3000;
 await connectDB();
 
 app.use(express.json());
-const allowedOrigins = process.env.FRONTEND_URL
-  ? [process.env.FRONTEND_URL, "http://localhost:5173", "http://localhost:4173"]
-  : "*";
-
 app.use(cors({
-  origin: allowedOrigins
+  origin: "*"
 }));
 
 app.get('/', (req, res) =>{
