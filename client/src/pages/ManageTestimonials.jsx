@@ -8,10 +8,23 @@ const initials = (name) => name.split(' ').map(n => n[0]).join('').toUpperCase()
 const colors = ['#8B5CF6', '#EC4899', '#06B6D4', '#F59E0B', '#10B981', '#F97316', '#6366F1', '#14B8A6']
 const avatarBg = (name) => colors[name.charCodeAt(0) % colors.length]
 
+const ADMIN_EMAIL = 'preranabothra9@gmail.com'
+
 const ManageTestimonials = () => {
-  const { token } = useSelector(state => state.auth)
+  const { user, token } = useSelector(state => state.auth)
   const [testimonials, setTestimonials] = useState([])
   const [loading, setLoading] = useState(true)
+
+  if (user?.email !== ADMIN_EMAIL) {
+    return (
+      <div className='app-bg min-h-screen flex items-center justify-center'>
+        <div className='text-center'>
+          <MessageSquare className='size-12 text-white/20 mx-auto mb-4' />
+          <p className='text-white/40 font-medium'>Admin access required</p>
+        </div>
+      </div>
+    )
+  }
 
   const load = async () => {
     try {

@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import User from '../models/User.models.js';
 
 const protect = async (req, res, next) => {
     let token = req.headers.authorization;
@@ -20,4 +21,17 @@ const protect = async (req, res, next) => {
     }
 }
 
-export default protect;
+const adminAuth = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.userId).select('email');
+        const adminEmail = process.env.ADMIN_EMAIL || "preranabothra9@gmail.com";
+        if (!user || user.email !== adminEmail) {
+            return res.status(403).json({ message: "Admin access required" });
+        }
+        next();
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+export { protect, adminAuth };
