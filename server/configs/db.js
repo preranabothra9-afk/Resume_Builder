@@ -4,7 +4,7 @@ const connectDB = async () => {
     try {
         mongoose.connection.on("connected", () => {console.log("Database connected successfully!")})
 
-        const mongodbURI = process.env.MONGODB_URI;
+        let mongodbURI = process.env.MONGODB_URI;
         const project_name ="resume-builder";
 
         if(!mongodbURI){
