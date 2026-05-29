@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import api from '../configs/api.js'
 import toast from 'react-hot-toast'
-import { Check, Trash2, Loader, Star, MessageSquare } from 'lucide-react'
+import { Check, Trash2, Loader, Star, MessageSquare, ArrowLeft } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 const initials = (name) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 const colors = ['#8B5CF6', '#EC4899', '#06B6D4', '#F59E0B', '#10B981', '#F97316', '#6366F1', '#14B8A6']
@@ -12,6 +13,7 @@ const ADMIN_EMAIL = 'preranabothra9@gmail.com'
 
 const ManageTestimonials = () => {
   const { user, token } = useSelector(state => state.auth)
+  const navigate = useNavigate()
   const [testimonials, setTestimonials] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -64,9 +66,10 @@ const ManageTestimonials = () => {
     <div className='app-bg min-h-screen'>
       <div className='max-w-4xl mx-auto px-4 py-8'>
         <div className='flex items-center gap-3 mb-8'>
-          <div className='size-12 rounded-2xl gradient-btn flex items-center justify-center shadow-lg shadow-violet-500/30'>
-            <MessageSquare className='size-6' />
-          </div>
+          <button onClick={() => navigate('/app')}
+            className='size-12 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center hover:bg-white/[0.08] active:scale-95 transition-all shrink-0'>
+            <ArrowLeft className='size-5 text-white/50' />
+          </button>
           <div>
             <h1 className='text-2xl font-bold text-white'>Manage Testimonials</h1>
             <p className='text-white/40 text-sm mt-0.5'>Approve or remove user testimonials</p>
