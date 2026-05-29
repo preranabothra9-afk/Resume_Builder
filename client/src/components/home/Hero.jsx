@@ -28,7 +28,7 @@ const Hero = () => {
         <div className="hidden md:flex items-center gap-8 text-white/50 font-medium">
           <a href="#" className="hover:text-white transition-colors">Home</a>
           <a href="#features" className="hover:text-white transition-colors">Features</a>
-          <a href="#testimonials" className="hover:text-white transition-colors">Testimonials</a>
+          <a href="#wall-of-love" className="hover:text-white transition-colors">Wall of Love</a>
           <a href="#cta" className="hover:text-white transition-colors">Contact</a>
         </div>
 
@@ -54,7 +54,7 @@ const Hero = () => {
         <div className="fixed inset-0 z-50 bg-[#08080f]/95 backdrop-blur-xl flex flex-col items-center justify-center text-lg gap-8 md:hidden">
           <a href="#" onClick={() => setMenuOpen(false)} className="text-white/70 hover:text-white transition-colors">Home</a>
           <a href="#features" onClick={() => setMenuOpen(false)} className="text-white/70 hover:text-white transition-colors">Features</a>
-          <a href="#testimonials" onClick={() => setMenuOpen(false)} className="text-white/70 hover:text-white transition-colors">Testimonials</a>
+          <a href="#wall-of-love" onClick={() => setMenuOpen(false)} className="text-white/70 hover:text-white transition-colors">Wall of Love</a>
           <a href="#cta" onClick={() => setMenuOpen(false)} className="text-white/70 hover:text-white transition-colors">Contact</a>
           <button onClick={() => setMenuOpen(false)} className="size-11 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition border border-white/10 text-white/60">
             <X className="size-5" />

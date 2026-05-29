@@ -65,7 +65,7 @@ const Testimonial = () => {
 
   return (
     <>
-      <div id='testimonials' className='relative bg-[#08080f] py-28 px-4 scroll-mt-12 overflow-hidden'>
+      <div id='wall-of-love' className='relative bg-[#08080f] py-28 px-4 scroll-mt-12 overflow-hidden'>
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-[60%] bg-gradient-to-br from-fuchsia-600/5 via-violet-600/5 to-transparent rounded-full blur-[150px]" />
         <div className="relative flex flex-col items-center">
           <div className="flex items-center gap-2 text-sm text-violet-300 bg-violet-500/10 border border-violet-500/20 rounded-full px-5 py-2 font-medium">
