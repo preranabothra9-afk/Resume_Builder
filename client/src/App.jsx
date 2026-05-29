@@ -14,6 +14,7 @@ import Loader from "./components/Loader";
 import VerifyEmail from './pages/VerifyEmail.jsx'
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import ManageTestimonials from "./pages/ManageTestimonials";
 
 
 const App = () => {
@@ -62,6 +63,7 @@ const App = () => {
         <Route path='/app' element={<Layout />}>
           <Route index element={<Dashboard />}/>
           <Route path='builder/:resumeId' element={<ResumeBuilder />}/>
+          <Route path='testimonials' element={<ManageTestimonials />}/>
         </Route>
         <Route path="/verify-email/:token" element={<VerifyEmail />} />
         <Route path='view/:resumeId' element={<Preview />}/>

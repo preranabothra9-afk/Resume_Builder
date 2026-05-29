@@ -5,6 +5,7 @@ import connectDB from './configs/db.js';
 import router from './Routes/user.Routes.js';
 import resumeRouter from './Routes/resume.Routes.js';
 import aiRouter from './Routes/ai.Routes.js';
+import testimonialRouter from './Routes/testimonial.Routes.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -23,6 +24,7 @@ app.get('/', (req, res) =>{
 app.use('/api/users', router);
 app.use('/api/resumes', resumeRouter)
 app.use('/api/ai', aiRouter)
+app.use('/api/testimonials', testimonialRouter)
 
 app.listen(port, () =>{
     console.log(`Server is running on port http://${port}`);

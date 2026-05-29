@@ -2,7 +2,7 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { logout } from '../app/features/authSlice.js'
-import { LogOut } from 'lucide-react'
+import { LogOut, MessageSquare } from 'lucide-react'
 
 const Navbar = () => {
   const { user } = useSelector(state => state.auth)
@@ -25,6 +25,10 @@ const Navbar = () => {
           <span className='text-white font-semibold text-sm'>ResumeBuilder</span>
         </Link>
         <div className='flex items-center gap-3 text-sm'>
+          <Link to='/app/testimonials' className='flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/10 text-white/50 hover:text-violet-400 hover:border-violet-500/30 hover:bg-violet-500/10 active:scale-95 transition-all'>
+            <MessageSquare className='size-4' />
+            <span className='max-sm:hidden'>Testimonials</span>
+          </Link>
           <div className='flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-white/10 border border-white/[0.08]'>
             <div className='size-6 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-[10px] font-bold text-white'>
               {user?.name?.charAt(0)?.toUpperCase() || 'U'}
