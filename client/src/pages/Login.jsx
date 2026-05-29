@@ -1,4 +1,4 @@
-import { Mail, User2Icon, Lock, Eye, EyeOff, Sparkles } from 'lucide-react'
+import { Mail, User2Icon, Lock, Eye, EyeOff } from 'lucide-react'
 import React from 'react'
 import { useDispatch } from 'react-redux'
 import api from '../configs/api.js';
@@ -29,7 +29,26 @@ const Login = () => {
     e.preventDefault()
     try {
       const { data } = await api.post(`/api/users/${state}`, formData);
-      localStorage.setItem("token", data.token);
+
+      if (state === "login") {
+        const storage = rememberMe ? localStorage : sessionStorage;
+        storage.setItem("token", data.token);
+
+        if (rememberMe) {
+          const payload = JSON.stringify({
+            email: formData.email,
+            expires: Date.now() + 30 * 24 * 60 * 60 * 1000
+          });
+          localStorage.setItem("rememberedEmail", payload);
+          localStorage.setItem("rememberMe", "true");
+        } else {
+          localStorage.removeItem("rememberedEmail");
+          localStorage.removeItem("rememberMe");
+        }
+      } else {
+        localStorage.setItem("token", data.token);
+      }
+
       dispatch(login({ token: data.token, user: data.user }));
       toast.success(data.message)
       navigate("/app");
@@ -45,13 +64,20 @@ const Login = () => {
 
   useEffect(() => {
     if (state !== "login") return;
-    const savedEmail = localStorage.getItem("rememberedEmail");
-    const remember = localStorage.getItem("rememberMe");
-    if (savedEmail && remember === "true") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setFormData(prev => ({ ...prev, email: savedEmail }));
-      setRememberMe(true);
-    }
+    try {
+      const raw = localStorage.getItem("rememberedEmail");
+      const remember = localStorage.getItem("rememberMe");
+      if (raw && remember === "true") {
+        const saved = JSON.parse(raw);
+        if (saved.expires > Date.now()) {
+          setFormData(prev => ({ ...prev, email: saved.email }));
+          setRememberMe(true);
+        } else {
+          localStorage.removeItem("rememberedEmail");
+          localStorage.removeItem("rememberMe");
+        }
+      }
+    } catch {}
   }, [state]);
 
   return (
