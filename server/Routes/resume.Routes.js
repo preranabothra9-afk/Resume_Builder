@@ -1,5 +1,5 @@
 import express from 'express';
-import protect from '../middlewares/auth.middlewares.js';
+import { protect } from '../middlewares/auth.middlewares.js';
 import { createResume, deleteResume, getPublicResumeById, getResumeById, updateResume,getAllResumes, trackResumeView, trackDownload, exportResume } from '../controllers/resume.controllers.js';
 import upload from '../configs/multer.js';
 
