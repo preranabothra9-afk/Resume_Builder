@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from 'react';
 
 const Login = () => {
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -28,12 +27,11 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const { data } = await api.post(`/api/users/${state}`, formData);
+      const { data } = await api.post(`/api/users/${state}`,
+        state === "login" ? { ...formData, rememberMe } : formData
+      );
 
       if (state === "login") {
-        const storage = rememberMe ? localStorage : sessionStorage;
-        storage.setItem("token", data.token);
-
         if (rememberMe) {
           const payload = JSON.stringify({
             email: formData.email,
@@ -45,11 +43,9 @@ const Login = () => {
           localStorage.removeItem("rememberedEmail");
           localStorage.removeItem("rememberMe");
         }
-      } else {
-        localStorage.setItem("token", data.token);
+        dispatch(login({ token: data.accessToken, user: data.user }));
       }
 
-      dispatch(login({ token: data.token, user: data.user }));
       toast.success(data.message)
       navigate("/app");
     } catch (error) {
@@ -77,7 +73,7 @@ const Login = () => {
           localStorage.removeItem("rememberMe");
         }
       }
-    } catch {}
+    } catch { }
   }, [state]);
 
   return (

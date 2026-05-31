@@ -1,14 +1,11 @@
 import { FilePenLineIcon, LoaderCircleIcon, PencilIcon, PlusIcon, TrashIcon, UploadCloud, UploadCloudIcon, XIcon, BarChart3, Sparkles } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
 import api from '../configs/api.js'
 import toast from 'react-hot-toast'
 import pdfToText from 'react-pdftotext'
 
 const Dashboard = () => {
-
-  const { token } = useSelector(state => state.auth);
   const gradients = [
     'from-violet-600/20 via-fuchsia-600/10 to-transparent',
     'from-cyan-600/20 via-blue-600/10 to-transparent',
@@ -30,7 +27,7 @@ const Dashboard = () => {
 
   const loadAllResumes = async () => {
     try {
-      const { data } = await api.get('/api/users/resumes', { headers: { Authorization: token } })
+      const { data } = await api.get('/api/users/resumes')
       setallResumes(data.resumes)
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message);
@@ -40,7 +37,7 @@ const Dashboard = () => {
   const createResume = async (event) => {
     try {
       event.preventDefault()
-      const { data } = await api.post('/api/resumes/create', { title }, { headers: { Authorization: token } })
+      const { data } = await api.post('/api/resumes/create', { title })
       setallResumes([...allResumes, data.resume])
       setTitle('')
       setShowCreateResume(false)
@@ -55,7 +52,7 @@ const Dashboard = () => {
     setIsLoading(true);
     try {
       const resumeText = await pdfToText(resume)
-      const { data } = await api.post('/api/ai/upload-resume', { title, resumeText }, { headers: { Authorization: token } });
+      const { data } = await api.post('/api/ai/upload-resume', { title, resumeText });
       setTitle('')
       setResume(null)
       setShowUploadResume(false)
@@ -69,7 +66,7 @@ const Dashboard = () => {
   const editResume = async (event) => {
     try {
       event.preventDefault();
-      const { data } = await api.put(`/api/resumes/update`, { resumeId: editResumeId, resumeData: { title } }, { headers: { Authorization: token } });
+      const { data } = await api.put(`/api/resumes/update`, { resumeId: editResumeId, resumeData: { title } });
       setallResumes(allResumes.map(resume => resume._id === editResumeId ? { ...resume, title } : resume));
       setTitle('');
       setEditResumeId('')
@@ -83,7 +80,7 @@ const Dashboard = () => {
     try {
       const confirm = window.confirm('Are you sure you want to delete this resume?')
       if (confirm) {
-        const { data } = await api.delete(`/api/resumes/delete/${resumeId}`, { headers: { Authorization: token } })
+        const { data } = await api.delete(`/api/resumes/delete/${resumeId}`)
         setallResumes(allResumes.filter(resume => resume._id !== resumeId))
         toast.success(data.message)
       }

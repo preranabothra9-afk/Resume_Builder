@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import rateLimit from 'express-rate-limit';
 import 'dotenv/config';
 import connectDB from './configs/db.js';
 import router from './Routes/user.Routes.js';
@@ -13,10 +15,40 @@ const port = process.env.PORT || 3000;
 // Database connection
 await connectDB();
 
-app.use(express.json());
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.BACKEND_URL,
+  'http://localhost:5173',
+  'http://localhost:3000',
+].filter(Boolean);
+
 app.use(cors({
-  origin: "*"
+  origin: allowedOrigins,
+  credentials: true
 }));
+app.use(express.json());
+app.use(cookieParser());
+
+// Rate limiters
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { message: "Too many attempts, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const forgotPasswordLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 3,
+  message: { message: "Too many password reset attempts, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use('/api/users/login', authLimiter);
+app.use('/api/users/register', authLimiter);
+app.use('/api/users/forgot-password', forgotPasswordLimiter);
 
 app.get('/', (req, res) =>{
     res.send("Server is Live...")

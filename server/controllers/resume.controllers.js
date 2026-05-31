@@ -576,35 +576,3 @@ export const exportResume = async (req, res) => {
   }
 
 };
-
-// export const atsScore = async (req,res)=>{
-//   const { resumeId, jobDescription } = req.body;
-
-//   const resume = await Resume.findById(resumeId);
-
-//   const resumeText = `
-//   ${resume.professional_summary}
-//   ${resume.skills.join(" ")}
-//   ${resume.experience.map(e=>e.description).join(" ")}
-//   `;
-
-//   const jobWords = jobDescription
-//     .toLowerCase()
-//     .match(/\b[a-z]+\b/g);
-
-//   const uniqueWords = [...new Set(jobWords)];
-
-//   const matched = uniqueWords.filter(word =>
-//     resumeText.toLowerCase().includes(word)
-//   );
-
-//   const score = Math.round(
-//     (matched.length / uniqueWords.length) * 100
-//   );
-
-//   res.json({
-//     score,
-//     matched,
-//     missing: uniqueWords.filter(w=>!matched.includes(w))
-//   });
-// };

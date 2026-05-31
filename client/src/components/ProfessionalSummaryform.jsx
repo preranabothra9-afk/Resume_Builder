@@ -2,12 +2,10 @@ import { Loader2, Sparkles } from 'lucide-react'
 import React from 'react'
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { useSelector } from 'react-redux'
 import api from '../configs/api';
 
 const ProfessionalSummaryform = ({ data, onChange, setResumeData }) => {
 
-  const { token } = useSelector((state) => state.auth);
   const [isgenerating, setIsGenerating] = useState(false);
 
   const generateSummary = async () => {
@@ -18,7 +16,7 @@ const ProfessionalSummaryform = ({ data, onChange, setResumeData }) => {
     try {
       setIsGenerating(true);
       const prompt = `Improve this resume summary in 3–4 professional sentences. Do not shorten important skills or experience. ${data}`;
-      const response = await api.post('/api/ai/enhance-pro-sum', { userContent: prompt }, { headers: { Authorization: token } })
+      const response = await api.post('/api/ai/enhance-pro-sum', { userContent: prompt })
       setResumeData(prev => ({ ...prev, professional_summary: response.data.enhancedContent }))
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message)

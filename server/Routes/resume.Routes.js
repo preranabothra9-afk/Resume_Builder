@@ -15,6 +15,5 @@ resumeRouter.get('/public/:resumeId', getPublicResumeById);
 resumeRouter.get("/view/:resumeId", trackResumeView);
 resumeRouter.post("/download/:resumeId", protect, trackDownload);
 resumeRouter.get("/export/:resumeId", protect, exportResume);
-//resumeRouter.post("/ats-score", protect, atsScore)
 
 export default resumeRouter;

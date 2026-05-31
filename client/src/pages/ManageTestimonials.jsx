@@ -12,7 +12,7 @@ const avatarBg = (name) => colors[name.charCodeAt(0) % colors.length]
 const ADMIN_EMAIL = 'preranabothra9@gmail.com'
 
 const ManageTestimonials = () => {
-  const { user, token } = useSelector(state => state.auth)
+  const { user } = useSelector(state => state.auth)
   const navigate = useNavigate()
   const [testimonials, setTestimonials] = useState([])
   const [loading, setLoading] = useState(true)
@@ -30,7 +30,7 @@ const ManageTestimonials = () => {
 
   const load = async () => {
     try {
-      const { data } = await api.get('/api/testimonials/all', { headers: { Authorization: token } })
+      const { data } = await api.get('/api/testimonials/all')
       setTestimonials(data.testimonials)
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message)
@@ -41,7 +41,7 @@ const ManageTestimonials = () => {
 
   const toggleApprove = async (id) => {
     try {
-      const { data } = await api.patch(`/api/testimonials/${id}/approve`, {}, { headers: { Authorization: token } })
+      const { data } = await api.patch(`/api/testimonials/${id}/approve`)
       setTestimonials(prev => prev.map(t => t._id === id ? { ...t, isApproved: !t.isApproved } : t))
       toast.success(data.message)
     } catch (error) {
@@ -52,7 +52,7 @@ const ManageTestimonials = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this testimonial?')) return
     try {
-      await api.delete(`/api/testimonials/${id}`, { headers: { Authorization: token } })
+      await api.delete(`/api/testimonials/${id}`)
       setTestimonials(prev => prev.filter(t => t._id !== id))
       toast.success('Testimonial deleted')
     } catch (error) {

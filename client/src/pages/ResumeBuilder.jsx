@@ -10,7 +10,6 @@ import ExperienceForm from '../components/ExperienceForm';
 import EducationForm from '../components/EducationForm';
 import ProjectForm from '../components/ProjectForm';
 import SkillsForm from '../components/SkillsForm';
-import { useSelector } from 'react-redux';
 import api from '../configs/api.js';
 import toast from 'react-hot-toast'
 import ResumeAnalytics from '../components/ResumeAnalytics';
@@ -18,7 +17,6 @@ import ResumeAnalytics from '../components/ResumeAnalytics';
 const ResumeBuilder = () => {
 
   const { resumeId } = useParams();
-  const { token } = useSelector(state => state.auth)
 
   const [resumeData, setResumeData] = useState({
     _id: '',
@@ -36,7 +34,7 @@ const ResumeBuilder = () => {
 
   const loadExistingResume = async () => {
     try {
-      const { data } = await api.get(`/api/resumes/get/${resumeId}`, { headers: { Authorization: token } })
+      const { data } = await api.get(`/api/resumes/get/${resumeId}`)
       if (data.resume) {
         setResumeData(data.resume)
         document.title = data.resume.title;
@@ -77,7 +75,7 @@ const ResumeBuilder = () => {
       removeBackground && formData.append("removeBackground", "yes");
       typeof resumeData.personal_info.image === 'object' && formData.append("image", resumeData.personal_info.image)
 
-      const { data } = await api.put('/api/resumes/update', formData, { headers: { Authorization: token } });
+      const { data } = await api.put('/api/resumes/update', formData);
       if (data.resume) {
         setResumeData(prev => ({ ...prev, ...data.resume }));
       }
@@ -117,7 +115,7 @@ const ResumeBuilder = () => {
       const formData = new FormData()
       formData.append("resumeId", resumeId)
       formData.append("resumeData", JSON.stringify({ public: !resumeData.public }))
-      const { data } = await api.put('/api/resumes/update', formData, { headers: { Authorization: token } });
+      const { data } = await api.put('/api/resumes/update', formData);
       setResumeData({ ...resumeData, public: !resumeData.public })
       toast.success(data.message);
     } catch (error) {
@@ -138,7 +136,6 @@ const ResumeBuilder = () => {
   const exportResume = async (type) => {
     try {
       const res = await api.get(`/api/resumes/export/${resumeId}?format=${type}`, {
-        headers: { Authorization: token },
         responseType: "blob"
       });
       const url = window.URL.createObjectURL(new Blob([res.data]));

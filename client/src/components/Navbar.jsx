@@ -2,6 +2,7 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { logout } from '../app/features/authSlice.js'
+import api from '../configs/api.js'
 import { LogOut, MessageSquare } from 'lucide-react'
 
 const Navbar = () => {
@@ -9,7 +10,12 @@ const Navbar = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const logoutUser = () => {
+  const logoutUser = async () => {
+    try {
+      await api.post('/api/users/logout')
+    } catch {
+      // Proceed with local logout even if API fails
+    }
     navigate('/')
     dispatch(logout())
   }

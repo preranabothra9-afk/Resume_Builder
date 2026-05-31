@@ -9,41 +9,31 @@ import Login from './pages/Login'
 import { useDispatch, useSelector } from 'react-redux'
 import api from './configs/api.js'
 import { login, setLoading } from './app/features/authSlice.js'
-import {Toaster} from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import Loader from "./components/Loader";
 import VerifyEmail from './pages/VerifyEmail.jsx'
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ManageTestimonials from "./pages/ManageTestimonials";
+import { store } from './app/store.js'
+import { injectStore } from './configs/api.js'
 
+injectStore(store);
 
 const App = () => {
-
   const dispatch = useDispatch()
-   const { loading } = useSelector((state) => state.auth);
+  const { loading } = useSelector((state) => state.auth);
 
-  const getUserData = async () =>{
-    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-
-    if (!token) {
-        dispatch(setLoading(false));
-        return;
-    }
-
+  const getUserData = async () => {
     try {
-      if (token){
-        const { data } = await api.get('/api/users/data', {headers : {Authorization: token}})
-        if(data.data){
-          dispatch(login({token, user:data.data}));
-        }
-        dispatch(setLoading(false));
-      }else{
-        dispatch(setLoading(false));
+      const { data } = await api.post('/api/users/refresh');
+      if (data.user) {
+        dispatch(login({ token: data.accessToken, user: data.user }));
       }
-
-    } catch (error) {
+    } catch {
+      // Not logged in
+    } finally {
       dispatch(setLoading(false));
-      console.log(error.message)
     }
   }
 
@@ -57,16 +47,16 @@ const App = () => {
 
   return (
     <>
-    <Toaster />
+      <Toaster />
       <Routes>
-        <Route path='/' element={<Home />}/>
+        <Route path='/' element={<Home />} />
         <Route path='/app' element={<Layout />}>
-          <Route index element={<Dashboard />}/>
-          <Route path='builder/:resumeId' element={<ResumeBuilder />}/>
-          <Route path='testimonials' element={<ManageTestimonials />}/>
+          <Route index element={<Dashboard />} />
+          <Route path='builder/:resumeId' element={<ResumeBuilder />} />
+          <Route path='testimonials' element={<ManageTestimonials />} />
         </Route>
         <Route path="/verify-email/:token" element={<VerifyEmail />} />
-        <Route path='view/:resumeId' element={<Preview />}/>
+        <Route path='view/:resumeId' element={<Preview />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
