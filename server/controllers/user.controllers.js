@@ -96,12 +96,14 @@ export const loginUser = async (req, res) => {
 
     const accessToken = generateAccessToken(user._id);
 
+    const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
+
     if (rememberMe) {
       const refreshToken = generateRefreshToken(user._id);
       res.cookie("refresh_token", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: isSecure,
+        sameSite: isSecure ? 'none' : 'lax',
         path: '/',
         maxAge: 7 * 24 * 60 * 60 * 1000
       });
@@ -109,8 +111,8 @@ export const loginUser = async (req, res) => {
 
     res.cookie("access_token", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: isSecure,
+      sameSite: isSecure ? 'none' : 'lax',
       path: '/',
       maxAge: 15 * 60 * 1000
     });
@@ -181,10 +183,11 @@ export const refreshToken = async (req, res) => {
     }
 
     const accessToken = generateAccessToken(user._id);
+    const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
     res.cookie("access_token", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: isSecure,
+      sameSite: isSecure ? 'none' : 'lax',
       path: '/',
       maxAge: 15 * 60 * 1000
     });

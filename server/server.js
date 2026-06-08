@@ -10,6 +10,7 @@ import aiRouter from './Routes/ai.Routes.js';
 import testimonialRouter from './Routes/testimonial.Routes.js';
 
 const app = express();
+app.set('trust proxy', 1);
 const port = process.env.PORT || 3000;
 
 // Database connection
@@ -23,7 +24,12 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    if (/^https:\/\/.*resume-builder.*\.vercel\.app$/.test(origin)) return callback(null, true);
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 app.use(express.json());
