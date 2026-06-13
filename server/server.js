@@ -1,8 +1,29 @@
+import { config } from 'dotenv';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+config({ path: resolve(__dirname, '../.env') });
+config({ path: resolve(__dirname, '.env') });
+
+const REQUIRED_ENV = [
+  'JWT_SECRET',
+  'JWT_REFRESH_SECRET',
+  'MONGODB_URI',
+  'FRONTEND_URL',
+];
+const missing = REQUIRED_ENV.filter(k => !process.env[k]);
+if (missing.length > 0) {
+  console.error('Missing required environment variables:');
+  missing.forEach(k => console.error(`  - ${k}`));
+  console.error('Set them in your Render dashboard or create server/.env');
+  process.exit(1);
+}
+
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
-import 'dotenv/config';
 import connectDB from './configs/db.js';
 import router from './Routes/user.Routes.js';
 import resumeRouter from './Routes/resume.Routes.js';
@@ -13,7 +34,6 @@ const app = express();
 app.set('trust proxy', 1);
 const port = process.env.PORT || 3000;
 
-// Database connection
 await connectDB();
 
 const allowedOrigins = [
@@ -35,7 +55,6 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Rate limiters
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,

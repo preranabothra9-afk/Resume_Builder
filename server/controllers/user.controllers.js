@@ -44,10 +44,12 @@ export const registerUser = async (req, res) => {
       isVerified: false
     });
 
-    await sendVerificationEmail(email, verificationToken);
+    const emailSent = await sendVerificationEmail(email, verificationToken);
 
     return res.status(201).json({
-      message: "Verification email sent. Please check your inbox."
+      message: emailSent
+        ? "Verification email sent. Please check your inbox."
+        : "Account created, but verification email could not be sent. Try logging in to resend."
     });
 
   } catch (error) {
@@ -82,11 +84,13 @@ export const loginUser = async (req, res) => {
 
       await user.save();
 
-      await sendVerificationEmail(user.email, verificationToken);
+      const emailSent = await sendVerificationEmail(user.email, verificationToken);
 
       throw new ApiError(
         401,
-        "Email not verified. A new verification email has been sent."
+        emailSent
+          ? "Email not verified. A new verification email has been sent."
+          : "Email not verified. Could not send verification email. Please contact support."
       );
     }
     const isMatch = await bcrypt.compare(password, user.password);
