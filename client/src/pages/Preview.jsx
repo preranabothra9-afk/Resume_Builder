@@ -26,6 +26,12 @@ const Preview = () => {
     loadResume()
   }, [])
 
+  useEffect(() => {
+    if (resumeData) {
+      api.get(`/api/resumes/view/${resumeId}`).catch(() => {});
+    }
+  }, [resumeData])
+
   return resumeData ? (
     <div className='app-bg min-h-screen'>
       <div className='max-w-3xl mx-auto py-10 px-4'>

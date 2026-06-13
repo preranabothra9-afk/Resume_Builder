@@ -145,6 +145,7 @@ const ResumeBuilder = () => {
       document.body.appendChild(link);
       link.click();
       link.remove();
+      api.post(`/api/resumes/download/${resumeId}`).catch(() => {});
     } catch (err) {
       console.error(err);
     }
