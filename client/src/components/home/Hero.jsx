@@ -81,7 +81,7 @@ const Hero = () => {
         </div>
 
         {/* Headline */}
-        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold max-w-6xl text-center mt-12 leading-[1.1] text-balance">
+        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold max-w-6xl text-center mt-12 leading-[1.1] text-balance">
           <span className="text-white">Land your dream job with </span>
           <span className="gradient-text">AI-powered</span>
           <br />
