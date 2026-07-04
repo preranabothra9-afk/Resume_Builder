@@ -290,9 +290,25 @@ export const resetPassword = async (req, res) => {
     user.password = await bcrypt.hash(password, 10);
     user.resetToken = undefined;
     user.resetTokenExpire = undefined;
+    user.passwordResetAt = new Date();
     await user.save();
 
     res.json({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const checkResetStatus = async (req, res) => {
+  try {
+    const email = sanitize(req.body.email)?.toLowerCase();
+    const user = await User.findOne({ email });
+    if (!user || !user.passwordResetAt) {
+      return res.json({ reset: false });
+    }
+    const fiveMinAgo = Date.now() - 5 * 60 * 1000;
+    const reset = user.passwordResetAt.getTime() > fiveMinAgo;
+    res.json({ reset });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
