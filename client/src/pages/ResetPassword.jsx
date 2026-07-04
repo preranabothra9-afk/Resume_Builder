@@ -15,7 +15,7 @@ const ResetPassword = () => {
     try {
       await api.post(`/api/users/reset-password/${token}`, { password });
       toast.success("Password updated successfully");
-      setTimeout(() => { navigate("/?state=login"); }, 1500);
+      setTimeout(() => { navigate("/login"); }, 1500);
     } catch (error) {
       toast.error(error?.response?.data?.message);
     }
