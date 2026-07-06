@@ -1,280 +1,125 @@
-import React, { useMemo, useState } from "react";
+import React from "react";
 import {
   AlertCircle,
+  BarChart3,
   CheckCircle2,
+  Clipboard,
   ClipboardCheck,
   FileSearch,
+  Gauge,
+  Layers3,
+  ListChecks,
+  SearchCheck,
   Sparkles,
   Target,
+  XCircle,
 } from "lucide-react";
+import toast from "react-hot-toast";
+import { analyzeATS } from "../utils/atsAnalysis";
 
-const STOP_WORDS = new Set([
-  "about", "after", "again", "also", "and", "are", "but", "can", "did",
-  "for", "from", "has", "have", "into", "its", "job", "our", "per", "role",
-  "that", "the", "this", "to", "was", "will", "with", "you", "your",
-]);
-
-const normalizeText = (value) =>
-  String(value || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9+#.\s-]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-const getWords = (value) =>
-  normalizeText(value)
-    .split(" ")
-    .filter((word) => word.length > 2 && !STOP_WORDS.has(word));
-
-const getResumeText = (resumeData, resumeText = "") => {
-  if (resumeText?.trim()) {
-    return resumeText;
-  }
-
-  const info = resumeData?.personal_info || {};
-  const experience = resumeData?.experience || [];
-  const education = resumeData?.education || [];
-  const projects = resumeData?.project || [];
-  const skills = resumeData?.skills || [];
-
-  return [
-    info.full_name,
-    info.profession,
-    info.location,
-    info.linkedin,
-    info.website,
-    resumeData?.professional_summary,
-    skills.join(" "),
-    experience
-      .map((item) => [item.position, item.company, item.description].join(" "))
-      .join(" "),
-    education
-      .map((item) => [item.degree, item.field, item.institution].join(" "))
-      .join(" "),
-    projects
-      .map((item) => [item.name, item.type, item.description].join(" "))
-      .join(" "),
-  ].join(" ");
+const scoreTone = (score) => {
+  if (score >= 80) return { text: "text-emerald-300", bar: "from-emerald-500 to-teal-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" };
+  if (score >= 60) return { text: "text-amber-300", bar: "from-amber-500 to-orange-400", bg: "bg-amber-500/10", border: "border-amber-500/20" };
+  return { text: "text-rose-300", bar: "from-rose-500 to-pink-400", bg: "bg-rose-500/10", border: "border-rose-500/20" };
 };
 
-const getTopKeywords = (text) => {
-  const counts = getWords(text).reduce((acc, word) => {
-    acc[word] = (acc[word] || 0) + 1;
-    return acc;
-  }, {});
+const ATSAnalyzer = ({
+  resumeData,
+  resumeText = "",
+  sourceLabel = "Current resume",
+  jobDescription,
+  onJobDescriptionChange,
+  analysis: providedAnalysis,
+}) => {
+  const analysis = providedAnalysis || analyzeATS({ resumeData, resumeText, jobDescription });
+  const overallTone = scoreTone(analysis.scores.overall);
+  const scoreRing = `conic-gradient(${analysis.scores.overall >= 80 ? "#34d399" : analysis.scores.overall >= 60 ? "#f59e0b" : "#fb7185"} ${analysis.scores.overall * 3.6}deg, rgba(255,255,255,0.08) 0deg)`;
 
-  return Object.entries(counts)
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .slice(0, 18)
-    .map(([word]) => word);
-};
-
-const scoreFromChecks = (checks) => {
-  const earned = checks.reduce((total, check) => total + (check.passed ? check.weight : 0), 0);
-  const possible = checks.reduce((total, check) => total + check.weight, 0);
-  return possible ? Math.round((earned / possible) * 100) : 0;
-};
-
-const ATSAnalyzer = ({ resumeData, resumeText = "", sourceLabel = "Current resume" }) => {
-  const [jobDescription, setJobDescription] = useState("");
-
-  const analysis = useMemo(() => {
-    const info = resumeData?.personal_info || {};
-    const experience = resumeData?.experience || [];
-    const education = resumeData?.education || [];
-    const projects = resumeData?.project || [];
-    const skills = resumeData?.skills || [];
-    const analysisText = getResumeText(resumeData, resumeText);
-    const hasStructuredData = Boolean(resumeData);
-    const resumeWords = new Set(getWords(analysisText));
-    const jobKeywords = getTopKeywords(jobDescription);
-    const matchedKeywords = jobKeywords.filter((word) => resumeWords.has(word));
-    const missingKeywords = jobKeywords.filter((word) => !resumeWords.has(word));
-    const keywordScore = jobKeywords.length
-      ? Math.round((matchedKeywords.length / jobKeywords.length) * 100)
-      : 0;
-
-    const impactCount = (analysisText.match(/\d+%|\$\d+|\b\d+x\b|\b\d+\+/gi) || []).length;
-    const hasActionVerbs = /\b(led|built|created|improved|reduced|increased|managed|launched|optimized|delivered|designed|developed|implemented)\b/i.test(analysisText);
-    const hasContactDetails = hasStructuredData
-      ? Boolean(info.full_name && info.email && info.phone && info.location)
-      : /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(analysisText) && /(\+?\d[\d\s().-]{7,})/.test(analysisText);
-    const hasSummary = hasStructuredData
-      ? Boolean(resumeData?.professional_summary?.trim()?.length >= 80)
-      : analysisText.length >= 400;
-    const hasExperience = hasStructuredData
-      ? experience.length > 0 && experience.every((item) => item.position && item.company && item.description)
-      : /\b(experience|employment|work history|professional experience)\b/i.test(analysisText);
-    const hasSkills = hasStructuredData
-      ? skills.length >= 6
-      : /\b(skills|technologies|tools|expertise)\b/i.test(analysisText) && resumeWords.size >= 20;
-    const hasEducation = hasStructuredData
-      ? education.length > 0
-      : /\b(education|degree|university|college|bachelor|master|certification)\b/i.test(analysisText);
-    const hasProjects = hasStructuredData
-      ? projects.length > 0
-      : /\b(projects|portfolio|built|created|launched)\b/i.test(analysisText);
-
-    const checks = [
-      {
-        label: "Contact details",
-        detail: "Name, email, phone, and location are easier for recruiters to parse.",
-        passed: hasContactDetails,
-        weight: 12,
-      },
-      {
-        label: "Professional summary",
-        detail: "A concise summary gives ATS software a clear profile signal.",
-        passed: hasSummary,
-        weight: 12,
-      },
-      {
-        label: "Work experience",
-        detail: "Add role, company, dates, and achievement-focused descriptions.",
-        passed: hasExperience,
-        weight: 18,
-      },
-      {
-        label: "Skills coverage",
-        detail: "List 6 or more relevant hard skills from the target role.",
-        passed: hasSkills,
-        weight: 14,
-      },
-      {
-        label: "Education",
-        detail: "Include at least one education entry.",
-        passed: hasEducation,
-        weight: 8,
-      },
-      {
-        label: "Projects",
-        detail: "Projects can add searchable tools, domains, and outcomes.",
-        passed: hasProjects,
-        weight: 8,
-      },
-      {
-        label: "Measurable impact",
-        detail: "Numbers like percentages, revenue, time saved, or scale improve ranking.",
-        passed: impactCount >= 2,
-        weight: 12,
-      },
-      {
-        label: "Action verbs",
-        detail: "Start bullets with clear ownership and result verbs.",
-        passed: hasActionVerbs,
-        weight: 6,
-      },
-      {
-        label: "Keyword match",
-        detail: "Paste a job description to compare important terms.",
-        passed: !jobKeywords.length || keywordScore >= 55,
-        weight: 10,
-      },
-    ];
-
-    const baseScore = scoreFromChecks(checks);
-    const score = jobKeywords.length
-      ? Math.round(baseScore * 0.75 + keywordScore * 0.25)
-      : baseScore;
-
-    return {
-      score,
-      keywordScore,
-      matchedKeywords,
-      missingKeywords,
-      checks,
-      impactCount,
-      jobKeywords,
-      hasResumeContent: analysisText.trim().length > 0,
-    };
-  }, [jobDescription, resumeData, resumeText]);
-
-  const scoreColor = analysis.score >= 80
-    ? "text-emerald-300"
-    : analysis.score >= 60
-      ? "text-amber-300"
-      : "text-rose-300";
-
-  const scoreRing = `conic-gradient(${analysis.score >= 80 ? "#34d399" : analysis.score >= 60 ? "#f59e0b" : "#fb7185"} ${analysis.score * 3.6}deg, rgba(255,255,255,0.08) 0deg)`;
+  const copySuggestion = async (suggestion) => {
+    try {
+      await navigator.clipboard.writeText(suggestion);
+      toast.success("Suggestion copied.");
+    } catch {
+      toast.error("Could not copy suggestion.");
+    }
+  };
 
   return (
-    <section className="glass-card rounded-2xl p-6" id="ats-analysis">
-      <div className="flex items-start justify-between gap-4 mb-6">
-        <div className="flex items-center gap-2.5">
-          <FileSearch className="size-5 text-white/40" />
-          <div>
-            <h2 className="text-lg font-semibold text-white">ATS Score Analysis</h2>
-            <p className="text-xs text-white/35 mt-0.5">Checks structure, keywords, and recruiter scan quality.</p>
+    <div className="space-y-6" id="ats-analysis">
+      <section className="glass-card rounded-2xl p-6">
+        <div className="flex items-start justify-between gap-4 mb-6">
+          <div className="flex items-center gap-2.5">
+            <FileSearch className="size-5 text-white/40" />
+            <div>
+              <h2 className="text-lg font-semibold text-white">ATS Score Analysis</h2>
+              <p className="text-xs text-white/35 mt-0.5">Checks structure, keywords, readability, and recruiter scan quality.</p>
+            </div>
+          </div>
+          <div className="size-24 rounded-full p-1 shrink-0" style={{ background: scoreRing }}>
+            <div className="size-full rounded-full bg-[#111119] border border-white/[0.06] flex flex-col items-center justify-center">
+              <span className={`text-3xl font-bold ${overallTone.text}`}>{analysis.scores.overall}</span>
+              <span className="text-[10px] text-white/35">/ 100</span>
+            </div>
           </div>
         </div>
-        <div className="size-20 rounded-full p-1 shrink-0" style={{ background: scoreRing }}>
-          <div className="size-full rounded-full bg-[#111119] border border-white/[0.06] flex flex-col items-center justify-center">
-            <span className={`text-2xl font-bold ${scoreColor}`}>{analysis.score}</span>
-            <span className="text-[10px] text-white/35">/ 100</span>
-          </div>
+
+        <div className="rounded-xl bg-cyan-500/5 border border-cyan-500/15 px-4 py-3 mb-5">
+          <p className="text-xs font-medium text-cyan-200">{sourceLabel}</p>
+          <p className="text-xs text-white/35 mt-1">
+            {analysis.hasResumeContent ? "Resume content is ready for ATS scoring." : "Add resume content on this page to start the analysis."}
+          </p>
         </div>
-      </div>
 
-      <div className="grid md:grid-cols-3 gap-3 mb-5">
-        <MetricCard icon={ClipboardCheck} label="Passed Checks" value={`${analysis.checks.filter((item) => item.passed).length}/${analysis.checks.length}`} />
-        <MetricCard icon={Target} label="Keyword Match" value={analysis.jobKeywords.length ? `${analysis.keywordScore}%` : "Add JD"} />
-        <MetricCard icon={Sparkles} label="Impact Metrics" value={analysis.impactCount} />
-      </div>
-
-      <div className="rounded-xl bg-cyan-500/5 border border-cyan-500/15 px-4 py-3 mb-5">
-        <p className="text-xs font-medium text-cyan-200">{sourceLabel}</p>
-        <p className="text-xs text-white/35 mt-1">
-          {analysis.hasResumeContent
-            ? "Resume content is ready for ATS scoring."
-            : "Add resume content on this page to start the analysis."}
-        </p>
-      </div>
-
-      <label className="block text-sm font-medium text-white/70 mb-2" htmlFor="job-description">
-        Target job description
-      </label>
-      <textarea
-        id="job-description"
-        rows={5}
-        value={jobDescription}
-        onChange={(event) => setJobDescription(event.target.value)}
-        placeholder="Paste a job description here to compare important keywords..."
-        className="w-full"
-      />
-
-      {analysis.jobKeywords.length > 0 && (
-        <div className="grid md:grid-cols-2 gap-4 mt-5">
-          <KeywordGroup title="Matched Keywords" keywords={analysis.matchedKeywords} tone="matched" />
-          <KeywordGroup title="Missing Keywords" keywords={analysis.missingKeywords} tone="missing" />
+        <div className="grid md:grid-cols-3 gap-3 mb-5">
+          <MetricCard icon={ClipboardCheck} label="Passed Checks" value={`${analysis.checks.filter((item) => item.passed).length}/${analysis.checks.length}`} />
+          <MetricCard icon={Target} label="Keyword Match" value={analysis.keywords.jobKeywords.length ? `${analysis.keywords.score}%` : "Add JD"} />
+          <MetricCard icon={Sparkles} label="Impact Metrics" value={analysis.impactCount} />
         </div>
-      )}
 
-      <div className="mt-6">
-        <h3 className="text-sm font-semibold text-white/70 mb-3">Recommendations</h3>
-        <div className="space-y-2">
-          {analysis.checks.map((check) => {
-            const Icon = check.passed ? CheckCircle2 : AlertCircle;
-            return (
-              <div key={check.label} className="flex gap-3 rounded-xl bg-white/[0.02] border border-white/[0.05] p-3">
-                <Icon className={`size-4 mt-0.5 shrink-0 ${check.passed ? "text-emerald-400" : "text-amber-400"}`} />
-                <div>
-                  <p className="text-sm font-medium text-white/80">{check.label}</p>
-                  <p className="text-xs text-white/35 mt-0.5">{check.detail}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <label className="block text-sm font-medium text-white/70 mb-2" htmlFor="job-description">
+          Target job description
+        </label>
+        <textarea
+          id="job-description"
+          rows={5}
+          value={jobDescription}
+          onChange={(event) => onJobDescriptionChange?.(event.target.value)}
+          placeholder="Paste a job description here to compare important keywords..."
+          className="w-full"
+        />
+      </section>
+
+      <Dashboard scores={analysis.scores} />
+      <Completeness checks={analysis.checks} completion={analysis.completion} />
+      <Stats stats={analysis.stats} />
+      <KeywordAnalysis keywords={analysis.keywords} />
+      <SectionAnalysis sections={analysis.sectionAnalysis} />
+
+      <div className="grid lg:grid-cols-2 gap-6">
+        <HealthReport health={analysis.health} />
+        <Checklist items={analysis.compatibility} />
       </div>
-    </section>
+
+      <div className="grid lg:grid-cols-2 gap-6">
+        <Readability readability={analysis.readability} />
+        <Formatting issues={analysis.formattingIssues} />
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-6">
+        <ActionVerbs weakVerbs={analysis.weakVerbs} onCopy={copySuggestion} />
+        <Priorities priorities={analysis.priorities} />
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-6">
+        <RecruiterScan scan={analysis.recruiterScan} />
+        <SkillsCategorization skills={analysis.skills} />
+      </div>
+    </div>
   );
 };
 
 const MetricCard = ({ icon, label, value }) => {
-  const iconElement = React.createElement(icon, {
-    className: "size-4 text-cyan-300 mb-3",
-  });
-
+  const iconElement = React.createElement(icon, { className: "size-4 text-cyan-300 mb-3" });
   return (
     <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4">
       {iconElement}
@@ -284,26 +129,292 @@ const MetricCard = ({ icon, label, value }) => {
   );
 };
 
-const KeywordGroup = ({ title, keywords, tone }) => {
-  const emptyText = tone === "matched"
-    ? "No matches yet"
-    : "All top keywords are covered";
-  const toneClasses = tone === "matched"
-    ? "bg-emerald-500/10 text-emerald-200 border-emerald-500/20"
-    : "bg-amber-500/10 text-amber-200 border-amber-500/20";
+const Card = ({ icon, title, children }) => {
+  const iconElement = icon ? React.createElement(icon, { className: "size-5 text-white/40" }) : null;
+  return (
+    <section className="glass-card rounded-2xl p-6">
+      <div className="flex items-center gap-2.5 mb-5">
+        {iconElement}
+        <h3 className="text-lg font-semibold text-white">{title}</h3>
+      </div>
+      {children}
+    </section>
+  );
+};
 
+const Progress = ({ value, label }) => {
+  const tone = scoreTone(value);
+  return (
+    <div>
+      <div className="flex justify-between items-center text-sm mb-2">
+        <span className="text-white/60">{label}</span>
+        <span className={`font-semibold ${tone.text}`}>{value}%</span>
+      </div>
+      <div className="h-2.5 rounded-full bg-white/[0.06] overflow-hidden">
+        <div className={`h-full rounded-full bg-gradient-to-r ${tone.bar}`} style={{ width: `${value}%` }} />
+      </div>
+    </div>
+  );
+};
+
+const Dashboard = ({ scores }) => (
+  <Card icon={Gauge} title="Resume Strength Dashboard">
+    <div className="grid sm:grid-cols-2 gap-4">
+      {Object.entries({
+        "Overall ATS Score": scores.overall,
+        Structure: scores.structure,
+        Keywords: scores.keywords,
+        Formatting: scores.formatting,
+        Experience: scores.experience,
+        Skills: scores.skills,
+        Readability: scores.readability,
+      }).map(([label, value]) => (
+        <Progress key={label} label={label} value={value} />
+      ))}
+    </div>
+  </Card>
+);
+
+const Completeness = ({ checks, completion }) => {
+  const tone = scoreTone(completion);
+  return (
+    <Card icon={ListChecks} title="Resume Completeness Tracker">
+      <div className="flex items-center justify-between gap-4 mb-5">
+        <div>
+          <p className="text-sm text-white/40">Resume Complete</p>
+          <p className={`text-3xl font-bold ${tone.text}`}>{completion}%</p>
+        </div>
+        <div className="flex-1 max-w-sm">
+          <Progress label="Completion" value={completion} />
+        </div>
+      </div>
+      <div className="grid sm:grid-cols-2 gap-2">
+        {checks.map((item) => <StatusRow key={item.id} label={item.label} passed={item.passed} />)}
+      </div>
+    </Card>
+  );
+};
+
+const Stats = ({ stats }) => (
+  <Card icon={BarChart3} title="Resume Statistics">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {[
+        ["Pages", stats.pages],
+        ["Words", stats.words],
+        ["Characters", stats.characters],
+        ["Bullet Points", stats.bullets],
+        ["Sections", stats.sections],
+        ["Skills", stats.skills],
+        ["Reading Time", `${stats.readingTime}m`],
+      ].map(([label, value]) => (
+        <div key={label} className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4">
+          <p className="text-xl font-bold text-white">{value}</p>
+          <p className="text-xs text-white/35 mt-1">{label}</p>
+        </div>
+      ))}
+    </div>
+  </Card>
+);
+
+const KeywordAnalysis = ({ keywords }) => (
+  <Card icon={SearchCheck} title="Enhanced Keyword Analysis">
+    <div className="mb-5">
+      <Progress label="Keyword Match" value={keywords.jobKeywords.length ? keywords.score : 0} />
+      {!keywords.jobKeywords.length && <p className="text-xs text-white/30 mt-2">Paste a job description to calculate keyword match.</p>}
+    </div>
+    <div className="grid md:grid-cols-2 gap-4">
+      <KeywordGroup title="Matched Keywords" keywords={keywords.matched} tone="matched" />
+      <KeywordGroup title="Missing Keywords" keywords={keywords.missing} tone="missing" />
+    </div>
+  </Card>
+);
+
+const KeywordGroup = ({ title, keywords, tone }) => {
+  const matched = tone === "matched";
   return (
     <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-4">
       <p className="text-sm font-semibold text-white/70 mb-3">{title}</p>
       <div className="flex flex-wrap gap-2">
         {keywords.length > 0 ? keywords.map((keyword) => (
-          <span key={keyword} className={`px-2.5 py-1 rounded-full text-xs border ${toneClasses}`}>
+          <span key={keyword} className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs border ${matched ? "bg-emerald-500/10 text-emerald-200 border-emerald-500/20" : "bg-amber-500/10 text-amber-200 border-amber-500/20"}`}>
+            {matched ? <CheckCircle2 className="size-3" /> : <XCircle className="size-3" />}
             {keyword}
           </span>
         )) : (
-          <span className="text-xs text-white/30">{emptyText}</span>
+          <span className="text-xs text-white/30">{matched ? "No matches yet" : "No missing keywords found"}</span>
         )}
       </div>
+    </div>
+  );
+};
+
+const SectionAnalysis = ({ sections }) => (
+  <Card icon={Layers3} title="Section-wise Resume Analysis">
+    <div className="space-y-3">
+      {sections.map((section) => (
+        <details key={section.section} className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-4 open:bg-white/[0.035]">
+          <summary className="cursor-pointer list-none flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold text-white/80">{section.section}</p>
+              <p className="text-xs text-white/35 mt-1">{section.feedback}</p>
+            </div>
+            <div className="text-right">
+              <Stars rating={section.rating} />
+              <p className="text-xs text-white/30 mt-1">{section.score}%</p>
+            </div>
+          </summary>
+          <div className="mt-4 space-y-2">
+            {section.suggestions.map((suggestion) => (
+              <StatusRow key={suggestion} label={suggestion} passed={false} soft />
+            ))}
+          </div>
+        </details>
+      ))}
+    </div>
+  </Card>
+);
+
+const Stars = ({ rating }) => (
+  <div className="flex gap-0.5 justify-end">
+    {Array.from({ length: 5 }).map((_, index) => (
+      <Sparkles key={index} className={`size-3.5 ${index < rating ? "text-amber-300 fill-amber-300" : "text-white/15"}`} />
+    ))}
+  </div>
+);
+
+const HealthReport = ({ health }) => (
+  <Card icon={CheckCircle2} title="Resume Health Report">
+    <ReportList title="Strengths" items={health.strengths} empty="Add resume content to surface strengths." positive />
+    <div className="mt-5">
+      <ReportList title="Weaknesses" items={health.weaknesses} empty="No major weaknesses detected." />
+    </div>
+  </Card>
+);
+
+const ReportList = ({ title, items, empty, positive }) => (
+  <div>
+    <p className="text-sm font-semibold text-white/70 mb-3">{title}</p>
+    <div className="space-y-2">
+      {items.length ? items.map((item) => (
+        <StatusRow key={item} label={item} passed={positive} soft={!positive} />
+      )) : <p className="text-xs text-white/30">{empty}</p>}
+    </div>
+  </div>
+);
+
+const Checklist = ({ items }) => (
+  <Card icon={ClipboardCheck} title="ATS Compatibility Checklist">
+    <div className="space-y-2">
+      {items.map((item) => <StatusRow key={item.label} label={item.label} passed={item.passed} />)}
+    </div>
+  </Card>
+);
+
+const Readability = ({ readability }) => (
+  <Card icon={Gauge} title="Resume Readability Analysis">
+    <Progress label="Readability Score" value={readability.score} />
+    <div className="grid grid-cols-2 gap-3 mt-5">
+      {[
+        ["Reading Time", `${readability.readingTime}m`],
+        ["Avg Sentence", `${readability.averageSentenceLength} words`],
+        ["Avg Bullet", `${readability.averageBulletLength} words`],
+        ["Long Sentences", readability.longSentences],
+        ["Passive Voice", readability.passiveVoice],
+      ].map(([label, value]) => (
+        <div key={label} className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-3">
+          <p className="text-sm font-semibold text-white">{value}</p>
+          <p className="text-xs text-white/35 mt-1">{label}</p>
+        </div>
+      ))}
+    </div>
+  </Card>
+);
+
+const Formatting = ({ issues }) => (
+  <Card icon={AlertCircle} title="Formatting Checker">
+    <div className="space-y-2">
+      {issues.length ? issues.map((issue) => (
+        <StatusRow key={issue} label={issue} passed={false} soft />
+      )) : <StatusRow label="No common formatting issues detected" passed />}
+    </div>
+  </Card>
+);
+
+const ActionVerbs = ({ weakVerbs, onCopy }) => (
+  <Card icon={Sparkles} title="Action Verb Checker">
+    <div className="space-y-3">
+      {weakVerbs.length ? weakVerbs.map((item) => {
+        const suggestion = item.alternatives.join(", ");
+        return (
+          <div key={item.phrase} className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-4">
+            <p className="text-sm text-rose-200">Weak: {item.phrase}</p>
+            <div className="flex items-center justify-between gap-3 mt-2">
+              <p className="text-xs text-white/40">Try: {suggestion}</p>
+              <button type="button" onClick={() => onCopy(suggestion)} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/10 text-white/50 hover:text-cyan-300 hover:border-cyan-500/30 text-xs">
+                <Clipboard className="size-3" />
+                Copy
+              </button>
+            </div>
+          </div>
+        );
+      }) : (
+        <StatusRow label="No weak action verb patterns detected" passed />
+      )}
+    </div>
+  </Card>
+);
+
+const Priorities = ({ priorities }) => (
+  <Card icon={Target} title="Improvement Priority Panel">
+    <div className="space-y-2">
+      {priorities.length ? priorities.map((item) => (
+        <div key={`${item.level}-${item.text}`} className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-3">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm text-white/80">{item.text}</p>
+            <span className={`px-2 py-1 rounded-lg text-[11px] border ${item.level === "High" ? "text-rose-200 bg-rose-500/10 border-rose-500/20" : item.level === "Medium" ? "text-amber-200 bg-amber-500/10 border-amber-500/20" : "text-cyan-200 bg-cyan-500/10 border-cyan-500/20"}`}>
+              {item.level}
+            </span>
+          </div>
+        </div>
+      )) : <StatusRow label="No urgent improvements detected" passed />}
+    </div>
+  </Card>
+);
+
+const RecruiterScan = ({ scan }) => (
+  <Card icon={SearchCheck} title="Recruiter Scan Simulation">
+    <div className="grid sm:grid-cols-2 gap-4">
+      <ReportList title="Likely noticed" items={scan.noticed} empty="Add content to reveal recruiter signals." positive />
+      <ReportList title="May be overlooked" items={scan.overlooked} empty="Nothing important appears overlooked." />
+    </div>
+  </Card>
+);
+
+const SkillsCategorization = ({ skills }) => (
+  <Card icon={Layers3} title="Skills Categorization">
+    <div className="space-y-4">
+      {Object.keys(skills).length ? Object.entries(skills).map(([category, items]) => (
+        <div key={category}>
+          <p className="text-sm font-semibold text-white/70 mb-2">{category}</p>
+          <div className="flex flex-wrap gap-2">
+            {items.map((skill) => (
+              <span key={`${category}-${skill}`} className="px-2.5 py-1 rounded-full text-xs border bg-violet-500/10 text-violet-200 border-violet-500/20">
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      )) : <p className="text-xs text-white/30">No recognizable skills detected yet.</p>}
+    </div>
+  </Card>
+);
+
+const StatusRow = ({ label, passed, soft }) => {
+  const Icon = passed ? CheckCircle2 : soft ? AlertCircle : XCircle;
+  return (
+    <div className="flex items-center gap-2 rounded-lg bg-white/[0.02] border border-white/[0.05] px-3 py-2">
+      <Icon className={`size-4 shrink-0 ${passed ? "text-emerald-400" : soft ? "text-amber-400" : "text-rose-400"}`} />
+      <span className="text-sm text-white/60">{label}</span>
     </div>
   );
 };

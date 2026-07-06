@@ -12,9 +12,11 @@ import {
 import toast from "react-hot-toast";
 import pdfToText from "react-pdftotext";
 import ATSAnalyzer from "../components/ATSAnalyzer";
+import { analyzeATS } from "../utils/atsAnalysis";
 
 const ATSAnalysis = () => {
   const [resumeText, setResumeText] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
   const [fileName, setFileName] = useState("");
   const [isParsing, setIsParsing] = useState(false);
   const fileInputRef = useRef(null);
@@ -24,6 +26,11 @@ const ATSAnalysis = () => {
     if (resumeText.trim()) return "Analyzing pasted resume text";
     return "No resume selected";
   }, [fileName, resumeText]);
+
+  const analysis = useMemo(
+    () => analyzeATS({ resumeText, jobDescription }),
+    [resumeText, jobDescription]
+  );
 
   const handleFileUpload = async (event) => {
     const file = event.target.files?.[0];
@@ -64,23 +71,21 @@ const ATSAnalysis = () => {
       return;
     }
 
-    const report = [
-      "ATS Analysis Input",
-      `Generated: ${new Date().toLocaleString()}`,
-      fileName ? `Source: ${fileName}` : "Source: pasted resume text",
-      "",
-      resumeText,
-    ].join("\n");
+    try {
+      const reportWindow = window.open("", "_blank");
+      if (!reportWindow) {
+        toast.error("Allow popups to export the ATS report.");
+        return;
+      }
 
-    const blob = new Blob([report], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "ats-analysis-report.txt";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+      reportWindow.document.write(getReportHtml(analysis, fileName));
+      reportWindow.document.close();
+      reportWindow.focus();
+      setTimeout(() => reportWindow.print(), 300);
+      toast.success("ATS report is ready to save as PDF.");
+    } catch (error) {
+      toast.error(error?.message || "Failed to export ATS report.");
+    }
   };
 
   return (
@@ -173,7 +178,7 @@ const ATSAnalysis = () => {
                       className="gradient-btn-cyan rounded-xl px-4 py-2.5 text-sm flex items-center justify-center gap-2"
                     >
                       <Download className="size-4" />
-                      Export
+                      Export PDF
                     </button>
                     <button
                       type="button"
@@ -204,12 +209,93 @@ const ATSAnalysis = () => {
           </div>
 
           <div className="lg:col-span-7">
-            <ATSAnalyzer resumeText={resumeText} sourceLabel={sourceLabel} />
+            <ATSAnalyzer
+              resumeText={resumeText}
+              sourceLabel={sourceLabel}
+              jobDescription={jobDescription}
+              onJobDescriptionChange={setJobDescription}
+              analysis={analysis}
+            />
           </div>
         </section>
       </main>
     </div>
   );
+};
+
+const rows = (items, render) => items.map(render).join("");
+
+const getReportHtml = (analysis, fileName) => {
+  const scoreRows = rows(Object.entries(analysis.scores), ([label, value]) => `
+    <tr><td>${label}</td><td><strong>${value}%</strong></td></tr>
+  `);
+  const statRows = rows(Object.entries(analysis.stats), ([label, value]) => `
+    <tr><td>${label}</td><td><strong>${value}</strong></td></tr>
+  `);
+  const checkRows = rows(analysis.checks, (item) => `
+    <li>${item.passed ? "Pass" : "Needs work"} - ${item.label}</li>
+  `);
+  const sectionRows = rows(analysis.sectionAnalysis, (section) => `
+    <li><strong>${section.section}</strong>: ${section.score}% - ${section.feedback}<br />Suggestions: ${section.suggestions.join(", ")}</li>
+  `);
+  const priorityRows = rows(analysis.priorities, (item) => `<li><strong>${item.level}</strong>: ${item.text}</li>`);
+
+  return `
+    <!doctype html>
+    <html>
+      <head>
+        <title>ATS Analysis Report</title>
+        <style>
+          body { font-family: Inter, Arial, sans-serif; color: #111827; margin: 40px; line-height: 1.5; }
+          h1, h2 { color: #111827; }
+          h1 { font-size: 28px; margin-bottom: 4px; }
+          h2 { font-size: 18px; margin-top: 28px; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; }
+          .score { font-size: 42px; font-weight: 800; color: #4f46e5; margin: 18px 0; }
+          table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+          td { border: 1px solid #e5e7eb; padding: 8px 10px; }
+          ul { padding-left: 20px; }
+          .muted { color: #6b7280; font-size: 13px; }
+          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+          @media print { body { margin: 24px; } }
+        </style>
+      </head>
+      <body>
+        <h1>ATS Analysis Report</h1>
+        <p class="muted">Generated ${new Date().toLocaleString()}${fileName ? ` | Source: ${fileName}` : ""}</p>
+        <div class="score">${analysis.scores.overall}/100</div>
+
+        <div class="grid">
+          <section><h2>Category Scores</h2><table>${scoreRows}</table></section>
+          <section><h2>Resume Statistics</h2><table>${statRows}</table></section>
+        </div>
+
+        <h2>Resume Completeness</h2>
+        <p><strong>${analysis.completion}% complete</strong></p>
+        <ul>${checkRows}</ul>
+
+        <h2>Keyword Analysis</h2>
+        <p><strong>Keyword Match:</strong> ${analysis.keywords.score}%</p>
+        <p><strong>Matched:</strong> ${analysis.keywords.matched.join(", ") || "None"}</p>
+        <p><strong>Missing:</strong> ${analysis.keywords.missing.join(", ") || "None"}</p>
+
+        <h2>Resume Health</h2>
+        <p><strong>Strengths:</strong> ${analysis.health.strengths.join(", ") || "None detected yet"}</p>
+        <p><strong>Weaknesses:</strong> ${analysis.health.weaknesses.join(", ") || "None detected"}</p>
+
+        <h2>ATS Checklist</h2>
+        <ul>${rows(analysis.compatibility, (item) => `<li>${item.passed ? "Pass" : "Fail"} - ${item.label}</li>`)}</ul>
+
+        <h2>Readability</h2>
+        <p>Score: ${analysis.readability.score}% | Reading time: ${analysis.readability.readingTime} minute(s) | Long sentences: ${analysis.readability.longSentences} | Passive voice estimate: ${analysis.readability.passiveVoice}</p>
+
+        <h2>Section Analysis</h2>
+        <ul>${sectionRows}</ul>
+
+        <h2>Improvement Priorities</h2>
+        <ul>${priorityRows || "<li>No urgent improvements detected</li>"}</ul>
+      </body>
+    </html>
+  `;
 };
 
 export default ATSAnalysis;
