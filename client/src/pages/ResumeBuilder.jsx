@@ -13,6 +13,7 @@ import SkillsForm from '../components/SkillsForm';
 import api from '../configs/api.js';
 import toast from 'react-hot-toast'
 import ResumeAnalytics from '../components/ResumeAnalytics';
+import ATSAnalyzer from '../components/ATSAnalyzer';
 
 const ResumeBuilder = () => {
 
@@ -277,6 +278,11 @@ const ResumeBuilder = () => {
                 </div>
               </div>
             )}
+
+            {/* ATS Analysis */}
+            <div className="mt-8">
+              <ATSAnalyzer resumeData={resumeData} />
+            </div>
 
             {/* Analytics */}
             <div className="mt-8" id="analytics">
