@@ -1,5 +1,6 @@
 import { Zap, Sparkles, Shield, FileText, BarChart3, Wand2, Download, ArrowRight } from 'lucide-react';
 import React from 'react'
+import { Link } from 'react-router-dom';
 import Title from './Title';
 
 const Features = () => {
@@ -24,6 +25,7 @@ const Features = () => {
       icon: BarChart3,
       title: 'ATS Score Analysis',
       description: 'Get real-time feedback on how well your resume matches job descriptions.',
+      href: '/ats-analysis',
       gradient: 'from-amber-600 to-orange-600',
       border: 'border-amber-500/20',
       bg: 'bg-amber-500/5',
@@ -80,6 +82,12 @@ const Features = () => {
                     </div>
                     <h3 className="text-base font-semibold text-white mb-2">{feature.title}</h3>
                     <p className="text-sm text-white/40 leading-relaxed">{feature.description}</p>
+                    {feature.href && (
+                      <Link to={feature.href} className="inline-flex items-center gap-1.5 mt-4 text-sm font-medium text-amber-300 hover:text-amber-200">
+                        Open analysis
+                        <ArrowRight className="size-4" />
+                      </Link>
+                    )}
                   </div>
                 </div>
               );

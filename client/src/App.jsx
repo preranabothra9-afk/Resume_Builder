@@ -15,6 +15,7 @@ import VerifyEmail from './pages/VerifyEmail.jsx'
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ManageTestimonials from "./pages/ManageTestimonials";
+import ATSAnalysis from "./pages/ATSAnalysis";
 import { store } from './app/store.js'
 import { injectStore } from './configs/api.js'
 
@@ -50,6 +51,7 @@ const App = () => {
       <Toaster />
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path='/ats-analysis' element={<ATSAnalysis />} />
         <Route path='/app' element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path='builder/:resumeId' element={<ResumeBuilder />} />

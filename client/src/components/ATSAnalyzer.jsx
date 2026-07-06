@@ -26,7 +26,11 @@ const getWords = (value) =>
     .split(" ")
     .filter((word) => word.length > 2 && !STOP_WORDS.has(word));
 
-const getResumeText = (resumeData) => {
+const getResumeText = (resumeData, resumeText = "") => {
+  if (resumeText?.trim()) {
+    return resumeText;
+  }
+
   const info = resumeData?.personal_info || {};
   const experience = resumeData?.experience || [];
   const education = resumeData?.education || [];
@@ -71,7 +75,7 @@ const scoreFromChecks = (checks) => {
   return possible ? Math.round((earned / possible) * 100) : 0;
 };
 
-const ATSAnalyzer = ({ resumeData }) => {
+const ATSAnalyzer = ({ resumeData, resumeText = "", sourceLabel = "Current resume" }) => {
   const [jobDescription, setJobDescription] = useState("");
 
   const analysis = useMemo(() => {
@@ -80,8 +84,9 @@ const ATSAnalyzer = ({ resumeData }) => {
     const education = resumeData?.education || [];
     const projects = resumeData?.project || [];
     const skills = resumeData?.skills || [];
-    const resumeText = getResumeText(resumeData);
-    const resumeWords = new Set(getWords(resumeText));
+    const analysisText = getResumeText(resumeData, resumeText);
+    const hasStructuredData = Boolean(resumeData);
+    const resumeWords = new Set(getWords(analysisText));
     const jobKeywords = getTopKeywords(jobDescription);
     const matchedKeywords = jobKeywords.filter((word) => resumeWords.has(word));
     const missingKeywords = jobKeywords.filter((word) => !resumeWords.has(word));
@@ -89,44 +94,62 @@ const ATSAnalyzer = ({ resumeData }) => {
       ? Math.round((matchedKeywords.length / jobKeywords.length) * 100)
       : 0;
 
-    const impactCount = (resumeText.match(/\d+%|\$\d+|\b\d+x\b|\b\d+\+/gi) || []).length;
-    const hasActionVerbs = /\b(led|built|created|improved|reduced|increased|managed|launched|optimized|delivered|designed|developed|implemented)\b/i.test(resumeText);
+    const impactCount = (analysisText.match(/\d+%|\$\d+|\b\d+x\b|\b\d+\+/gi) || []).length;
+    const hasActionVerbs = /\b(led|built|created|improved|reduced|increased|managed|launched|optimized|delivered|designed|developed|implemented)\b/i.test(analysisText);
+    const hasContactDetails = hasStructuredData
+      ? Boolean(info.full_name && info.email && info.phone && info.location)
+      : /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(analysisText) && /(\+?\d[\d\s().-]{7,})/.test(analysisText);
+    const hasSummary = hasStructuredData
+      ? Boolean(resumeData?.professional_summary?.trim()?.length >= 80)
+      : analysisText.length >= 400;
+    const hasExperience = hasStructuredData
+      ? experience.length > 0 && experience.every((item) => item.position && item.company && item.description)
+      : /\b(experience|employment|work history|professional experience)\b/i.test(analysisText);
+    const hasSkills = hasStructuredData
+      ? skills.length >= 6
+      : /\b(skills|technologies|tools|expertise)\b/i.test(analysisText) && resumeWords.size >= 20;
+    const hasEducation = hasStructuredData
+      ? education.length > 0
+      : /\b(education|degree|university|college|bachelor|master|certification)\b/i.test(analysisText);
+    const hasProjects = hasStructuredData
+      ? projects.length > 0
+      : /\b(projects|portfolio|built|created|launched)\b/i.test(analysisText);
 
     const checks = [
       {
         label: "Contact details",
         detail: "Name, email, phone, and location are easier for recruiters to parse.",
-        passed: Boolean(info.full_name && info.email && info.phone && info.location),
+        passed: hasContactDetails,
         weight: 12,
       },
       {
         label: "Professional summary",
         detail: "A concise summary gives ATS software a clear profile signal.",
-        passed: Boolean(resumeData?.professional_summary?.trim()?.length >= 80),
+        passed: hasSummary,
         weight: 12,
       },
       {
         label: "Work experience",
         detail: "Add role, company, dates, and achievement-focused descriptions.",
-        passed: experience.length > 0 && experience.every((item) => item.position && item.company && item.description),
+        passed: hasExperience,
         weight: 18,
       },
       {
         label: "Skills coverage",
         detail: "List 6 or more relevant hard skills from the target role.",
-        passed: skills.length >= 6,
+        passed: hasSkills,
         weight: 14,
       },
       {
         label: "Education",
         detail: "Include at least one education entry.",
-        passed: education.length > 0,
+        passed: hasEducation,
         weight: 8,
       },
       {
         label: "Projects",
         detail: "Projects can add searchable tools, domains, and outcomes.",
-        passed: projects.length > 0,
+        passed: hasProjects,
         weight: 8,
       },
       {
@@ -162,8 +185,9 @@ const ATSAnalyzer = ({ resumeData }) => {
       checks,
       impactCount,
       jobKeywords,
+      hasResumeContent: analysisText.trim().length > 0,
     };
-  }, [jobDescription, resumeData]);
+  }, [jobDescription, resumeData, resumeText]);
 
   const scoreColor = analysis.score >= 80
     ? "text-emerald-300"
@@ -195,6 +219,15 @@ const ATSAnalyzer = ({ resumeData }) => {
         <MetricCard icon={ClipboardCheck} label="Passed Checks" value={`${analysis.checks.filter((item) => item.passed).length}/${analysis.checks.length}`} />
         <MetricCard icon={Target} label="Keyword Match" value={analysis.jobKeywords.length ? `${analysis.keywordScore}%` : "Add JD"} />
         <MetricCard icon={Sparkles} label="Impact Metrics" value={analysis.impactCount} />
+      </div>
+
+      <div className="rounded-xl bg-cyan-500/5 border border-cyan-500/15 px-4 py-3 mb-5">
+        <p className="text-xs font-medium text-cyan-200">{sourceLabel}</p>
+        <p className="text-xs text-white/35 mt-1">
+          {analysis.hasResumeContent
+            ? "Resume content is ready for ATS scoring."
+            : "Add resume content on this page to start the analysis."}
+        </p>
       </div>
 
       <label className="block text-sm font-medium text-white/70 mb-2" htmlFor="job-description">
