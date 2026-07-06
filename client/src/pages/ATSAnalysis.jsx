@@ -19,6 +19,7 @@ const ATSAnalysis = () => {
   const [jobDescription, setJobDescription] = useState("");
   const [fileName, setFileName] = useState("");
   const [isParsing, setIsParsing] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const fileInputRef = useRef(null);
 
   const sourceLabel = useMemo(() => {
@@ -65,12 +66,15 @@ const ATSAnalysis = () => {
     setFileName("");
   };
 
-  const downloadReport = () => {
+  const downloadReport = async () => {
     if (!resumeText.trim()) {
       toast.error("Add resume content before exporting.");
       return;
     }
 
+    if (isExporting) return;
+
+    setIsExporting(true);
     try {
       const reportWindow = window.open("", "_blank");
       if (!reportWindow) {
@@ -81,10 +85,13 @@ const ATSAnalysis = () => {
       reportWindow.document.write(getReportHtml(analysis, fileName));
       reportWindow.document.close();
       reportWindow.focus();
-      setTimeout(() => reportWindow.print(), 300);
-      toast.success("ATS report is ready to save as PDF.");
+      setTimeout(() => {
+        reportWindow.print();
+        setIsExporting(false);
+      }, 300);
     } catch (error) {
       toast.error(error?.message || "Failed to export ATS report.");
+      setIsExporting(false);
     }
   };
 
@@ -175,10 +182,11 @@ const ATSAnalysis = () => {
                     <button
                       type="button"
                       onClick={downloadReport}
-                      className="gradient-btn-cyan rounded-xl px-4 py-2.5 text-sm flex items-center justify-center gap-2"
+                      disabled={isExporting || !resumeText.trim()}
+                      className="gradient-btn-cyan rounded-xl px-4 py-2.5 text-sm flex items-center justify-center gap-2 disabled:opacity-50"
                     >
-                      <Download className="size-4" />
-                      Export PDF
+                      {isExporting ? <LoaderCircle className="size-4 animate-spin" /> : <Download className="size-4" />}
+                      {isExporting ? "Generating..." : "Export PDF"}
                     </button>
                     <button
                       type="button"
@@ -227,72 +235,223 @@ const rows = (items, render) => items.map(render).join("");
 
 const getReportHtml = (analysis, fileName) => {
   const scoreRows = rows(Object.entries(analysis.scores), ([label, value]) => `
-    <tr><td>${label}</td><td><strong>${value}%</strong></td></tr>
+    <tr><td class="score-label">${label}</td><td class="score-value">${value != null ? `${value}%` : "--"}</td></tr>
   `);
   const statRows = rows(Object.entries(analysis.stats), ([label, value]) => `
-    <tr><td>${label}</td><td><strong>${value}</strong></td></tr>
+    <tr><td class="score-label">${label}</td><td class="score-value">${value != null ? value : "--"}</td></tr>
   `);
   const checkRows = rows(analysis.checks, (item) => `
-    <li>${item.passed ? "Pass" : "Needs work"} - ${item.label}</li>
+    <li class="${item.passed ? "pass" : "fail"}">${item.passed ? "✅" : "⚠️"} ${item.label}</li>
   `);
   const sectionRows = rows(analysis.sectionAnalysis, (section) => `
-    <li><strong>${section.section}</strong>: ${section.score}% - ${section.feedback}<br />Suggestions: ${section.suggestions.join(", ")}</li>
+    <li><strong>${section.section}</strong> <span class="badge">${section.score}%</span> — ${section.feedback}${section.suggestions.length ? `<br/><span class="suggestion">Suggestions: ${section.suggestions.join("; ")}</span>` : ""}</li>
   `);
-  const priorityRows = rows(analysis.priorities, (item) => `<li><strong>${item.level}</strong>: ${item.text}</li>`);
+  const priorityRows = rows(analysis.priorities, (item) => `<li class="priority-${item.level.toLowerCase()}"><strong>${item.level}</strong>: ${item.text}</li>`);
+  const skillEntries = Object.entries(analysis.skills);
+  const totalSkills = skillEntries.reduce((s, [, v]) => s + v.length, 0);
+  const skillRows = skillEntries.length ? skillEntries.map(([cat, items]) => {
+    const tags = items.map((s) => '<span class="skill-tag">' + s + "</span>").join("");
+    return '<div class="skill-cat"><strong>' + cat + '</strong> <span class="badge">' + items.length + '</span><div class="skill-tags">' + tags + "</div></div>";
+  }).join("") : '<p class="muted">No skills detected.</p>';
+  const formattingRows = analysis.formattingIssues.length ? analysis.formattingIssues.map(i => '<li class="fail">⚠️ ' + i + '</li>').join("") : '<li class="pass">✅ No common formatting issues</li>';
+  const verbRows = analysis.weakVerbs.length ? analysis.weakVerbs.map(v => '<li class="fail">⚠️ <strong>' + v.phrase + '</strong> → Try: ' + v.alternatives.join(", ") + '</li>').join("") : '<li class="pass">✅ No weak action verb patterns</li>';
 
   return `
     <!doctype html>
     <html>
       <head>
-        <title>ATS Analysis Report</title>
+        <title>ATS Analysis Report${fileName ? ` - ${fileName}` : ""}</title>
         <style>
-          body { font-family: Inter, Arial, sans-serif; color: #111827; margin: 40px; line-height: 1.5; }
-          h1, h2 { color: #111827; }
-          h1 { font-size: 28px; margin-bottom: 4px; }
-          h2 { font-size: 18px; margin-top: 28px; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; }
-          .score { font-size: 42px; font-weight: 800; color: #4f46e5; margin: 18px 0; }
-          table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-          td { border: 1px solid #e5e7eb; padding: 8px 10px; }
-          ul { padding-left: 20px; }
-          .muted { color: #6b7280; font-size: 13px; }
-          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-          @media print { body { margin: 24px; } }
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: #1e293b; margin: 0; padding: 0;
+            background: #f8fafc; line-height: 1.6;
+          }
+          .header {
+            background: linear-gradient(135deg, #1e1b4b, #312e81);
+            color: #fff; padding: 36px 48px;
+          }
+          .header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+          .header .meta { color: #a5b4fc; font-size: 13px; margin-top: 6px; }
+          .header .overall {
+            display: inline-block; margin-top: 16px;
+            background: rgba(255,255,255,0.12); border-radius: 12px;
+            padding: 12px 28px;
+          }
+          .header .overall .num { font-size: 42px; font-weight: 800; color: #e0e7ff; }
+          .header .overall .label { font-size: 12px; color: #a5b4fc; margin-top: 2px; }
+          .body { padding: 36px 48px; }
+          section { margin-bottom: 32px; }
+          h2 {
+            font-size: 16px; font-weight: 600; color: #1e293b;
+            border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 14px;
+            display: flex; align-items: center; gap: 8px;
+          }
+          .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+          table { width: 100%; border-collapse: collapse; font-size: 14px; }
+          td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; }
+          .score-label { color: #64748b; }
+          .score-value { text-align: right; font-weight: 600; color: #1e293b; }
+          ul { list-style: none; padding: 0; }
+          li { padding: 6px 0; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
+          li:last-child { border-bottom: none; }
+          .pass { color: #059669; }
+          .fail { color: #d97706; }
+          .muted { color: #94a3b8; font-size: 13px; }
+          .badge {
+            display: inline-block; background: #e0e7ff; color: #4338ca;
+            font-size: 12px; font-weight: 600; padding: 2px 8px;
+            border-radius: 6px;
+          }
+          .suggestion { color: #64748b; font-size: 13px; }
+          .priority-high { color: #dc2626; }
+          .priority-medium { color: #d97706; }
+          .priority-low { color: #2563eb; }
+          .skill-cat { margin-bottom: 12px; }
+          .skill-cat strong { font-size: 14px; color: #1e293b; }
+          .skill-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+          .skill-tag {
+            display: inline-block; background: #eef2ff; color: #4338ca;
+            font-size: 12px; padding: 3px 10px; border-radius: 6px;
+          }
+          .tag-matched { background: #d1fae5; color: #065f46; }
+          .tag-missing { background: #fef3c7; color: #92400e; }
+          .keyword-section { margin-top: 12px; }
+          .keyword-section h3 { font-size: 14px; color: #475569; margin-bottom: 8px; }
+          .keyword-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+          .keyword-tag { display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 6px; }
+          .recruiter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+          .recruiter-col h3 { font-size: 14px; color: #475569; margin-bottom: 8px; }
+          @media print {
+            body { background: #fff; }
+            .header { padding: 24px 36px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .body { padding: 24px 36px; }
+            .skill-tag, .badge, .keyword-tag, .tag-matched, .tag-missing { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          }
         </style>
       </head>
       <body>
-        <h1>ATS Analysis Report</h1>
-        <p class="muted">Generated ${new Date().toLocaleString()}${fileName ? ` | Source: ${fileName}` : ""}</p>
-        <div class="score">${analysis.scores.overall}/100</div>
-
-        <div class="grid">
-          <section><h2>Category Scores</h2><table>${scoreRows}</table></section>
-          <section><h2>Resume Statistics</h2><table>${statRows}</table></section>
+        <div class="header">
+          <h1>ATS Analysis Report</h1>
+          <p class="meta">Generated ${new Date().toLocaleString()}${fileName ? ` &middot; Source: ${fileName}` : ""}</p>
+          <div class="overall">
+            <div class="num">${analysis.scores.overall != null ? `${analysis.scores.overall}/100` : "--/100"}</div>
+            <div class="label">Overall ATS Score</div>
+          </div>
         </div>
 
-        <h2>Resume Completeness</h2>
-        <p><strong>${analysis.completion}% complete</strong></p>
-        <ul>${checkRows}</ul>
+        <div class="body">
+          <section>
+            <h2>📊 Category Scores</h2>
+            <div class="grid-2">
+              <div>
+                <h2 style="font-size:14px;border:none;margin-bottom:6px;">Scores</h2>
+                <table>${scoreRows}</table>
+              </div>
+              <div>
+                <h2 style="font-size:14px;border:none;margin-bottom:6px;">Statistics</h2>
+                <table>${statRows}</table>
+              </div>
+            </div>
+          </section>
 
-        <h2>Keyword Analysis</h2>
-        <p><strong>Keyword Match:</strong> ${analysis.keywords.score}%</p>
-        <p><strong>Matched:</strong> ${analysis.keywords.matched.join(", ") || "None"}</p>
-        <p><strong>Missing:</strong> ${analysis.keywords.missing.join(", ") || "None"}</p>
+          <section>
+            <h2>✅ Resume Completeness</h2>
+            <p style="margin-bottom:8px;"><strong>${analysis.completion != null ? `${analysis.completion}% complete` : "--"}</strong></p>
+            <ul>${checkRows}</ul>
+          </section>
 
-        <h2>Resume Health</h2>
-        <p><strong>Strengths:</strong> ${analysis.health.strengths.join(", ") || "None detected yet"}</p>
-        <p><strong>Weaknesses:</strong> ${analysis.health.weaknesses.join(", ") || "None detected"}</p>
+          <section>
+            <h2>🔑 Keyword Analysis</h2>
+            <p><strong>Keyword Match:</strong> ${analysis.keywords.score != null ? `${analysis.keywords.score}%` : "--"}</p>
+            ${analysis.keywords.jobKeywords.length ? `
+            <div class="keyword-section">
+              <h3>Matched Keywords (${analysis.keywords.matched.length})</h3>
+              <div class="keyword-tags">${analysis.keywords.matched.length ? analysis.keywords.matched.map(k => `<span class="keyword-tag tag-matched">${k}</span>`).join("") : '<span class="muted">None</span>'}</div>
+            </div>
+            <div class="keyword-section">
+              <h3>Missing Keywords (${analysis.keywords.missing.length})</h3>
+              <div class="keyword-tags">${analysis.keywords.missing.length ? analysis.keywords.missing.map(k => `<span class="keyword-tag tag-missing">${k}</span>`).join("") : '<span class="muted">None</span>'}</div>
+            </div>
+            ` : '<p class="muted">No job description provided for keyword analysis.</p>'}
+          </section>
 
-        <h2>ATS Checklist</h2>
-        <ul>${rows(analysis.compatibility, (item) => `<li>${item.passed ? "Pass" : "Fail"} - ${item.label}</li>`)}</ul>
+          <section>
+            <h2>🧠 Resume Health</h2>
+            <div class="grid-2">
+              <div>
+                <h3 style="font-size:14px;color:#059669;margin-bottom:6px;">Strengths</h3>
+                <ul>${analysis.health.strengths.length ? analysis.health.strengths.map(s => `<li class="pass">✅ ${s}</li>`).join("") : '<li class="muted">None detected yet</li>'}</ul>
+              </div>
+              <div>
+                <h3 style="font-size:14px;color:#d97706;margin-bottom:6px;">Weaknesses</h3>
+                <ul>${analysis.health.weaknesses.length ? analysis.health.weaknesses.map(w => `<li class="fail">⚠️ ${w}</li>`).join("") : '<li class="muted">None detected</li>'}</ul>
+              </div>
+            </div>
+          </section>
 
-        <h2>Readability</h2>
-        <p>Score: ${analysis.readability.score}% | Reading time: ${analysis.readability.readingTime} minute(s) | Long sentences: ${analysis.readability.longSentences} | Passive voice estimate: ${analysis.readability.passiveVoice}</p>
+          <section>
+            <h2>📋 ATS Compatibility Checklist</h2>
+            <ul>${analysis.compatibility.length ? rows(analysis.compatibility, (item) => `<li class="${item.passed ? "pass" : "fail"}">${item.passed ? "✅" : "⚠️"} ${item.label}</li>`) : '<li class="muted">Upload a resume to see checklist.</li>'}</ul>
+          </section>
 
-        <h2>Section Analysis</h2>
-        <ul>${sectionRows}</ul>
+          <section>
+            <h2>📖 Readability Analysis</h2>
+            <table>
+              <tr><td class="score-label">Readability Score</td><td class="score-value">${analysis.readability.score != null ? `${analysis.readability.score}%` : "--"}</td></tr>
+              <tr><td class="score-label">Reading Time</td><td class="score-value">${analysis.readability.readingTime != null ? `${analysis.readability.readingTime} min` : "--"}</td></tr>
+              <tr><td class="score-label">Avg Sentence Length</td><td class="score-value">${analysis.readability.averageSentenceLength != null ? `${analysis.readability.averageSentenceLength} words` : "--"}</td></tr>
+              <tr><td class="score-label">Avg Bullet Length</td><td class="score-value">${analysis.readability.averageBulletLength != null ? `${analysis.readability.averageBulletLength} words` : "--"}</td></tr>
+              <tr><td class="score-label">Long Sentences</td><td class="score-value">${analysis.readability.longSentences != null ? analysis.readability.longSentences : "--"}</td></tr>
+              <tr><td class="score-label">Passive Voice</td><td class="score-value">${analysis.readability.passiveVoice != null ? analysis.readability.passiveVoice : "--"}</td></tr>
+            </table>
+          </section>
 
-        <h2>Improvement Priorities</h2>
-        <ul>${priorityRows || "<li>No urgent improvements detected</li>"}</ul>
+          <section>
+            <h2>📁 Section-wise Analysis</h2>
+            <ul>${sectionRows || '<li class="muted">Upload a resume to see section analysis.</li>'}</ul>
+          </section>
+
+          <section>
+            <h2>🛠 Formatting Checker</h2>
+            <ul>${formattingRows}</ul>
+          </section>
+
+          <section>
+            <h2>💪 Action Verb Checker</h2>
+            <ul>${verbRows}</ul>
+          </section>
+
+          <section>
+            <h2>🏷 Skills Categorization</h2>
+            ${skillEntries.length ? `<p class="muted" style="margin-bottom:10px;">${totalSkills} skill${totalSkills !== 1 ? "s" : ""} recognized across ${skillEntries.length} categor${skillEntries.length !== 1 ? "ies" : "y"}</p>` : ""}
+            ${skillRows}
+          </section>
+
+          <section>
+            <h2>🎯 Improvement Priorities</h2>
+            <ul>${priorityRows || "<li class=\"muted\">No urgent improvements detected</li>"}</ul>
+          </section>
+
+          <section>
+            <h2>👀 Recruiter Scan Simulation</h2>
+            <div class="recruiter-grid">
+              <div class="recruiter-col">
+                <h3>✅ Likely Noticed</h3>
+                <ul>${analysis.recruiterScan.noticed.length ? analysis.recruiterScan.noticed.map(s => `<li class="pass">✅ ${s}</li>`).join("") : '<li class="muted">No standout signals.</li>'}</ul>
+              </div>
+              <div class="recruiter-col">
+                <h3>⚠️ May Be Overlooked</h3>
+                <ul>${analysis.recruiterScan.overlooked.length ? analysis.recruiterScan.overlooked.map(s => `<li class="fail">⚠️ ${s}</li>`).join("") : '<li class="muted">Nothing overlooked.</li>'}</ul>
+              </div>
+            </div>
+          </section>
+
+          <p class="muted" style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid #e2e8f0;">
+            Generated by ResumeBuilder ATS Analyzer
+          </p>
+        </div>
       </body>
     </html>
   `;

@@ -154,14 +154,17 @@ const getFormattingIssues = (text, checks, bulletCount) => {
   return issues;
 };
 
-const getSectionAnalysis = ({ checks, scores, impactCount, keywordScore }) => {
+const getSectionAnalysis = ({ checks, scores, impactCount, keywordScore, jobKeywords }) => {
   const sectionMap = [
     ["Experience", scores.experience, ["Add measurable achievements", "Start bullets with stronger action verbs"]],
     ["Skills", scores.skills, ["Add more target-role technologies", "Group tools by category where possible"]],
     ["Projects", checks.find((item) => item.id === "projects")?.passed ? 90 : 55, ["Add project impact metrics", "Mention tools used in each project"]],
     ["Education", checks.find((item) => item.id === "education")?.passed ? 88 : 45, ["Add degree, school, and dates"]],
-    ["Keywords", keywordScore || 50, ["Mirror important job description wording naturally"]],
   ];
+
+  if (jobKeywords?.length) {
+    sectionMap.push(["Keywords", keywordScore || 50, ["Mirror important job description wording naturally"]]);
+  }
 
   return sectionMap.map(([section, score, suggestions]) => ({
     section,
@@ -187,14 +190,36 @@ const getPriorities = ({ missingKeywords, checks, impactCount, readability, form
   return priorities.sort((a, b) => b.impact - a.impact).slice(0, 10);
 };
 
+const EMPTY_ANALYSIS = {
+  text: "",
+  hasResumeContent: false,
+  scores: { overall: null, structure: null, keywords: null, formatting: null, experience: null, skills: null, readability: null },
+  checks: [],
+  completion: null,
+  stats: { pages: null, words: null, characters: null, bullets: null, sections: null, skills: null, readingTime: null },
+  impactCount: null,
+  keywords: { jobKeywords: [], matched: [], missing: [], score: null },
+  readability: { readingTime: null, averageSentenceLength: null, averageBulletLength: null, longSentences: null, passiveVoice: null, score: null },
+  formattingIssues: [],
+  weakVerbs: [],
+  sectionAnalysis: [],
+  priorities: [],
+  compatibility: [],
+  skills: {},
+  health: { strengths: [], weaknesses: [] },
+  recruiterScan: { noticed: [], overlooked: [] },
+};
+
 export const analyzeATS = ({ resumeData, resumeText = "", jobDescription = "" }) => {
   const text = getResumeText(resumeData, resumeText);
+  if (!text.trim()) return EMPTY_ANALYSIS;
+
   const normalized = normalizeText(text);
   const resumeWords = new Set(getWords(text));
   const jobKeywords = getTopKeywords(jobDescription);
   const matchedKeywords = jobKeywords.filter((word) => resumeWords.has(word));
   const missingKeywords = jobKeywords.filter((word) => !resumeWords.has(word));
-  const keywordScore = jobKeywords.length ? clamp((matchedKeywords.length / jobKeywords.length) * 100) : 0;
+  const keywordScore = jobKeywords.length ? clamp((matchedKeywords.length / jobKeywords.length) * 100) : null;
   const bulletCount = (text.match(/(^|\n)\s*[-*•]/g) || []).length;
   const impactCount = (text.match(/\d+%|\$\d+|\b\d+x\b|\b\d+\+/gi) || []).length;
   const wordCount = getWords(text).length;
@@ -222,9 +247,13 @@ export const analyzeATS = ({ resumeData, resumeText = "", jobDescription = "" })
   const structureScore = scoreFromChecks(checks.filter((item) => ["contact", "summary", "experience", "education", "projects"].includes(item.id)));
   const experienceScore = clamp((checks.find((item) => item.id === "experience")?.passed ? 60 : 25) + Math.min(impactCount * 12, 30) + (ACTION_VERBS.test(text) ? 10 : 0));
   const skillsScore = clamp((checks.find((item) => item.id === "skills")?.passed ? 60 : 25) + Math.min(skillCount * 5, 35));
-  const keywordBlend = jobKeywords.length ? keywordScore : 65;
+  const hasJobDescription = jobKeywords.length > 0;
+  const keywordBlend = hasJobDescription ? keywordScore : null;
+  const nonKeywordWeight = 0.28 + 0.16 + 0.16 + 0.1 + 0.08;
   const scores = {
-    overall: clamp(structureScore * 0.28 + keywordBlend * 0.22 + formatScore * 0.16 + experienceScore * 0.16 + skillsScore * 0.1 + readability.score * 0.08),
+    overall: hasJobDescription
+      ? clamp(structureScore * 0.28 + keywordBlend * 0.22 + formatScore * 0.16 + experienceScore * 0.16 + skillsScore * 0.1 + readability.score * 0.08)
+      : clamp((structureScore * 0.28 + formatScore * 0.16 + experienceScore * 0.16 + skillsScore * 0.1 + readability.score * 0.08) / nonKeywordWeight),
     structure: structureScore,
     keywords: keywordBlend,
     formatting: formatScore,
@@ -246,7 +275,7 @@ export const analyzeATS = ({ resumeData, resumeText = "", jobDescription = "" })
   ];
 
   const weakVerbMatches = WEAK_VERBS.filter(({ phrase }) => normalized.includes(phrase));
-  const sectionAnalysis = getSectionAnalysis({ checks, scores, impactCount, keywordScore: keywordBlend });
+  const sectionAnalysis = getSectionAnalysis({ checks, scores, impactCount, keywordScore: keywordBlend, jobKeywords });
   const priorities = getPriorities({ missingKeywords, checks, impactCount, readability, formattingIssues });
   const completion = scoreFromChecks(checks);
   const strengths = [
