@@ -171,8 +171,8 @@ const ResumeBuilder = () => {
           <div className='lg:col-span-5'>
             <div className='glass-card rounded-2xl overflow-hidden'>
               {/* Neon progress bar */}
-              <div className='h-[3px] bg-white/5'>
-                <div className='h-full bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-500 transition-all duration-500 glow' style={{ width: `${((activeSectionIndex + 1) / sections.length) * 100}%` }} />
+              <div className='h-0.75 bg-white/5'>
+                <div className='h-full bg-linear-to-r from-violet-500 via-fuchsia-500 to-cyan-500 transition-all duration-500 glow' style={{ width: `${((activeSectionIndex + 1) / sections.length) * 100}%` }} />
               </div>
 
               <div className='p-5'>
@@ -186,7 +186,7 @@ const ResumeBuilder = () => {
                         onClick={() => setActiveSectionIndex(index)}
                         className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-200 ${isActive
                           ? 'bg-violet-500/15 text-violet-300 border border-violet-500/20'
-                          : 'text-white/40 hover:bg-white/[0.04] hover:text-white/60 border border-transparent'
+                          : 'text-white/40 hover:bg-white/4 hover:text-white/60 border border-transparent'
                           }`}>
                         <Icon className='size-3.5' />
                         <span className='max-sm:hidden'>{section.name}</span>
@@ -211,7 +211,7 @@ const ResumeBuilder = () => {
                 </div>
 
                 {/* Form content */}
-                <div className='space-y-6 min-h-[300px]'>
+                <div className='space-y-6 min-h-75'>
                   {activeSection.id === 'personal' && (
                     <PersonalInfoForm data={resumeData.personal_info}
                       onChange={(data) => { setIsEditing(true); setResumeData(prev => ({ ...prev, personal_info: data })) }}
@@ -296,7 +296,7 @@ const ResumeBuilder = () => {
       {showExport && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => setShowExport(false)}>
-          <div className="bg-[#12121a] border border-white/[0.08] rounded-2xl w-80 p-6 shadow-2xl shadow-black/50"
+          <div className="bg-[#12121a] border border-white/8 rounded-2xl w-80 p-6 shadow-2xl shadow-black/50"
             onClick={e => e.stopPropagation()}>
             <h2 className="text-lg font-semibold text-white mb-4">Export Resume</h2>
             <div className="flex flex-col gap-2">
@@ -308,7 +308,7 @@ const ResumeBuilder = () => {
               ].map(({ label, gradient }) => (
                 <button key={label}
                   onClick={() => exportResume(label.toLowerCase().split(' ')[0])}
-                  className={`bg-gradient-to-r ${gradient} text-white rounded-xl p-3 text-sm font-medium hover:opacity-90 transition-all shadow-lg`}>
+                  className={`bg-linear-to-r ${gradient} text-white rounded-xl p-3 text-sm font-medium hover:opacity-90 transition-all shadow-lg`}>
                   Export as {label}
                 </button>
               ))}
