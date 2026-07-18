@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { logout } from '../app/features/authSlice.js'
 import api from '../configs/api.js'
 import { FileSearch, LogOut, MessageSquare } from 'lucide-react'
+import ThemeToggle from './ThemeToggle'
 
 const Navbar = () => {
   const { user } = useSelector(state => state.auth)
@@ -21,33 +22,34 @@ const Navbar = () => {
   }
 
   return (
-    <div className='sticky top-0 z-40 bg-[#0e0e1a]/90 backdrop-blur-xl border-b border-white/[0.06]'>
+    <div className='sticky top-0 z-40 backdrop-blur-xl border-b' style={{ backgroundColor: 'var(--bg-nav)', borderColor: 'var(--border-light)' }}>
       <div className="absolute inset-0 bg-gradient-to-r from-violet-500/10 via-transparent to-cyan-500/10 pointer-events-none" />
       <nav className='relative flex items-center justify-between max-w-7xl mx-auto py-3.5 px-4'>
         <Link to='/' className='flex items-center gap-2.5 group'>
           <div className='size-9 rounded-xl gradient-btn flex items-center justify-center text-sm font-bold shadow-lg shadow-violet-500/30 group-hover:scale-105 transition-transform'>
             RB
           </div>
-          <span className='text-white font-semibold text-sm'>ResumeBuilder</span>
+          <span className='font-semibold text-sm' style={{ color: 'var(--text-primary)' }}>ResumeBuilder</span>
         </Link>
         <div className='flex items-center gap-3 text-sm'>
-          <Link to='/ats-analysis' className='flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/10 text-white/50 hover:text-cyan-400 hover:border-cyan-500/30 hover:bg-cyan-500/10 active:scale-95 transition-all'>
+          <Link to='/ats-analysis' className='flex items-center gap-1.5 px-3 py-2 rounded-xl border active:scale-95 transition-all' style={{ borderColor: 'var(--border)', color: 'var(--text-dim)' }}>
             <FileSearch className='size-4' />
             <span className='max-sm:hidden'>ATS Analysis</span>
           </Link>
           {user?.email === 'preranabothra9@gmail.com' && (
-            <Link to='/app/testimonials' className='flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/10 text-white/50 hover:text-violet-400 hover:border-violet-500/30 hover:bg-violet-500/10 active:scale-95 transition-all'>
+            <Link to='/app/testimonials' className='flex items-center gap-1.5 px-3 py-2 rounded-xl border active:scale-95 transition-all' style={{ borderColor: 'var(--border)', color: 'var(--text-dim)' }}>
               <MessageSquare className='size-4' />
               <span className='max-sm:hidden'>Testimonials</span>
             </Link>
           )}
-          <div className='flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-white/10 border border-white/[0.08]'>
+          <div className='flex items-center gap-2.5 px-3.5 py-2 rounded-xl' style={{ backgroundColor: 'var(--glass-10)', border: '1px solid var(--border-medium)' }}>
             <div className='size-6 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-[10px] font-bold text-white'>
               {user?.name?.charAt(0)?.toUpperCase() || 'U'}
             </div>
-            <span className='text-white font-medium'>{user?.name}</span>
+            <span className='font-medium' style={{ color: 'var(--text-primary)' }}>{user?.name}</span>
           </div>
-          <button onClick={logoutUser} className='flex items-center gap-2 px-3.5 py-2 rounded-xl border border-white/10 text-white/70 hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/10 active:scale-95 transition-all'>
+          <ThemeToggle className='border' style={{ borderColor: 'var(--border)' }} />
+          <button onClick={logoutUser} className='flex items-center gap-2 px-3.5 py-2 rounded-xl border active:scale-95 transition-all' style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
             <LogOut className='size-4' />
             <span className='max-sm:hidden'>Logout</span>
           </button>

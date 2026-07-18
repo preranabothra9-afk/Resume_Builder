@@ -21,8 +21,8 @@ const ManageTestimonials = () => {
     return (
       <div className='app-bg min-h-screen flex items-center justify-center'>
         <div className='text-center'>
-          <MessageSquare className='size-12 text-white/20 mx-auto mb-4' />
-          <p className='text-white/40 font-medium'>Admin access required</p>
+          <MessageSquare className='size-12 text-hidden mx-auto mb-4' />
+          <p className='text-subtle font-medium'>Admin access required</p>
         </div>
       </div>
     )
@@ -67,29 +67,29 @@ const ManageTestimonials = () => {
       <div className='max-w-4xl mx-auto px-4 py-8'>
         <div className='flex items-center gap-3 mb-8'>
           <button onClick={() => navigate('/app')}
-            className='size-12 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center hover:bg-white/[0.08] active:scale-95 transition-all shrink-0'>
-            <ArrowLeft className='size-5 text-white/50' />
+            className='size-12 rounded-2xl bg-glass-4 border border-theme-light flex items-center justify-center hover-bg-glass-8 active:scale-95 transition-all shrink-0'>
+            <ArrowLeft className='size-5 text-dim' />
           </button>
           <div>
-            <h1 className='text-2xl font-bold text-white'>Manage Testimonials</h1>
-            <p className='text-white/40 text-sm mt-0.5'>Approve or remove user testimonials</p>
+            <h1 className='text-2xl font-bold text-primary'>Manage Testimonials</h1>
+            <p className='text-subtle text-sm mt-0.5'>Approve or remove user testimonials</p>
           </div>
         </div>
 
         {loading ? (
           <div className='flex items-center justify-center py-20'>
-            <Loader className='size-6 text-white/30 animate-spin' />
+            <Loader className='size-6 text-faint animate-spin' />
           </div>
         ) : testimonials.length === 0 ? (
           <div className='text-center py-20'>
-            <MessageSquare className='size-10 text-white/20 mx-auto mb-3' />
-            <p className='text-white/40 font-medium'>No testimonials yet</p>
+            <MessageSquare className='size-10 text-hidden mx-auto mb-3' />
+            <p className='text-subtle font-medium'>No testimonials yet</p>
           </div>
         ) : (
           <div className='space-y-3'>
             {testimonials.map(t => (
               <div key={t._id} className={`rounded-2xl border p-5 backdrop-blur-xl transition-all ${
-                t.isApproved ? 'border-emerald-500/20 bg-emerald-500/5' : 'border-white/[0.06] bg-white/[0.03]'
+                t.isApproved ? 'border-emerald-500/20 bg-emerald-500/5' : 'border-theme-light bg-glass-3'
               }`}>
                 <div className='flex items-start justify-between gap-4'>
                   <div className='flex items-center gap-3 min-w-0'>
@@ -98,8 +98,8 @@ const ManageTestimonials = () => {
                       {initials(t.name)}
                     </div>
                     <div className='min-w-0'>
-                      <p className='text-sm font-semibold text-white/80 truncate'>{t.name}</p>
-                      {t.email && <p className='text-xs text-white/30 truncate'>{t.email}</p>}
+                      <p className='text-sm font-semibold text-body truncate'>{t.name}</p>
+                      {t.email && <p className='text-xs text-faint truncate'>{t.email}</p>}
                       <div className='flex items-center gap-0.5 mt-0.5'>
                         {Array.from({ length: t.rating || 5 }).map((_, i) => (
                           <Star key={i} className='size-3 fill-violet-500 text-violet-500' />
@@ -128,8 +128,8 @@ const ManageTestimonials = () => {
                     </button>
                   </div>
                 </div>
-                <p className='text-sm text-white/60 mt-4 leading-relaxed'>{t.text}</p>
-                <p className='text-[10px] text-white/20 mt-2'>{new Date(t.createdAt).toLocaleDateString()}</p>
+                <p className='text-sm text-muted mt-4 leading-relaxed'>{t.text}</p>
+                <p className='text-[10px] text-hidden mt-2'>{new Date(t.createdAt).toLocaleDateString()}</p>
               </div>
             ))}
           </div>

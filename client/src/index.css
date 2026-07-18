@@ -1,6 +1,68 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-
 @import "tailwindcss";
+
+:root {
+  --bg-body: #08080f;
+  --bg-nav: rgba(14, 14, 26, 0.9);
+  --bg-elevated: #12121a;
+  --bg-tooltip: #1a1a25;
+  --bg-ring: #111119;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+
+  --glass-2: rgba(255, 255, 255, 0.02);
+  --glass-3: rgba(255, 255, 255, 0.03);
+  --glass-4: rgba(255, 255, 255, 0.04);
+  --glass-5: rgba(255, 255, 255, 0.05);
+  --glass-6: rgba(255, 255, 255, 0.06);
+  --glass-8: rgba(255, 255, 255, 0.08);
+  --glass-10: rgba(255, 255, 255, 0.1);
+
+  --text-primary: #ffffff;
+  --text-body: rgba(255, 255, 255, 0.9);
+  --text-muted: rgba(255, 255, 255, 0.7);
+  --text-dim: rgba(255, 255, 255, 0.5);
+  --text-subtle: rgba(255, 255, 255, 0.4);
+  --text-faint: rgba(255, 255, 255, 0.3);
+  --text-hidden: rgba(255, 255, 255, 0.2);
+
+  --border: rgba(255, 255, 255, 0.1);
+  --border-light: rgba(255, 255, 255, 0.06);
+  --border-medium: rgba(255, 255, 255, 0.08);
+
+  --shadow-card: rgba(0, 0, 0, 0.2);
+  --shadow-modal: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] {
+  --bg-body: #f8fafc;
+  --bg-nav: rgba(255, 255, 255, 0.9);
+  --bg-elevated: #ffffff;
+  --bg-tooltip: #e2e8f0;
+  --bg-ring: #f1f5f9;
+  --bg-overlay: rgba(0, 0, 0, 0.3);
+
+  --glass-2: rgba(0, 0, 0, 0.02);
+  --glass-3: rgba(0, 0, 0, 0.03);
+  --glass-4: rgba(0, 0, 0, 0.04);
+  --glass-5: rgba(0, 0, 0, 0.05);
+  --glass-6: rgba(0, 0, 0, 0.06);
+  --glass-8: rgba(0, 0, 0, 0.08);
+  --glass-10: rgba(0, 0, 0, 0.1);
+
+  --text-primary: #0f172a;
+  --text-body: rgba(15, 23, 42, 0.9);
+  --text-muted: rgba(15, 23, 42, 0.7);
+  --text-dim: rgba(15, 23, 42, 0.5);
+  --text-subtle: rgba(15, 23, 42, 0.4);
+  --text-faint: rgba(15, 23, 42, 0.3);
+  --text-hidden: rgba(15, 23, 42, 0.2);
+
+  --border: rgba(0, 0, 0, 0.1);
+  --border-light: rgba(0, 0, 0, 0.06);
+  --border-medium: rgba(0, 0, 0, 0.08);
+
+  --shadow-card: rgba(0, 0, 0, 0.08);
+  --shadow-modal: rgba(0, 0, 0, 0.15);
+}
 
 * {
   font-family: "Inter", sans-serif;
@@ -12,28 +74,96 @@
     @apply cursor-pointer transition-all duration-200;
   }
   input:not([type="checkbox"]) {
-    @apply outline-none border border-white/10 rounded-xl px-4 py-2.5 text-sm transition-all duration-200 bg-white/5 text-white/90 placeholder:text-white/30 focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20;
+    @apply outline-none border rounded-xl px-4 py-2.5 text-sm transition-all duration-200;
+    border-color: var(--border);
+    background-color: var(--glass-5);
+    color: var(--text-body);
+  }
+  input:not([type="checkbox"])::placeholder {
+    color: var(--text-faint);
+  }
+  input:not([type="checkbox"]):focus {
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
   }
   textarea {
-    @apply outline-none border border-white/10 rounded-xl px-4 py-2.5 text-sm transition-all duration-200 bg-white/5 text-white/90 placeholder:text-white/30 focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 resize-none;
+    @apply outline-none border rounded-xl px-4 py-2.5 text-sm transition-all duration-200 resize-none;
+    border-color: var(--border);
+    background-color: var(--glass-5);
+    color: var(--text-body);
+  }
+  textarea::placeholder {
+    color: var(--text-faint);
+  }
+  textarea:focus {
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
   }
   select {
-    @apply outline-none border border-white/10 rounded-xl px-4 py-2.5 text-sm transition-all duration-200 bg-white/5 text-white/90 focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20;
+    @apply outline-none border rounded-xl px-4 py-2.5 text-sm transition-all duration-200;
+    border-color: var(--border);
+    background-color: var(--glass-5);
+    color: var(--text-body);
+  }
+  select:focus {
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
   }
 }
 
 @layer utilities {
+  .text-primary { color: var(--text-primary); }
+  .text-body { color: var(--text-body); }
+  .text-muted { color: var(--text-muted); }
+  .text-dim { color: var(--text-dim); }
+  .text-subtle { color: var(--text-subtle); }
+  .text-faint { color: var(--text-faint); }
+  .text-hidden { color: var(--text-hidden); }
+
+  .bg-body { background-color: var(--bg-body); }
+  .bg-elevated { background-color: var(--bg-elevated); }
+  .bg-glass-4 { background-color: var(--glass-4); }
+  .bg-glass-5 { background-color: var(--glass-5); }
+  .bg-glass-6 { background-color: var(--glass-6); }
+  .bg-glass-8 { background-color: var(--glass-8); }
+  .bg-glass-10 { background-color: var(--glass-10); }
+
+  .border-theme { border-color: var(--border); }
+  .border-theme-light { border-color: var(--border-light); }
+  .border-theme-medium { border-color: var(--border-medium); }
+
+  .hover-text-primary:hover { color: var(--text-primary); }
+  .hover-bg-glass-5:hover { background-color: var(--glass-5); }
+  .hover-bg-glass-6:hover { background-color: var(--glass-6); }
+  .hover-border-theme:hover { border-color: var(--border); }
+
   .glass {
-    @apply bg-white/[0.04] backdrop-blur-xl border-b border-white/[0.06];
+    background-color: var(--glass-4);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--border-light);
   }
   .glass-card {
-    @apply bg-white/[0.04] backdrop-blur-xl border border-white/[0.06] shadow-lg shadow-black/20;
+    background-color: var(--glass-4);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 10px 15px -3px var(--shadow-card);
   }
   .glass-card-light {
-    @apply bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] shadow-lg shadow-black/20;
+    background-color: var(--glass-6);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--border-medium);
+    box-shadow: 0 10px 15px -3px var(--shadow-card);
   }
   .card-hover {
-    @apply hover:shadow-xl hover:shadow-black/30 hover:-translate-y-0.5 transition-all duration-300;
+    transition: all 0.3s;
+  }
+  .card-hover:hover {
+    box-shadow: 0 20px 25px -5px var(--shadow-card);
+    --tw-translate-y: -0.125rem;
+    translate: 0 var(--tw-translate-y);
   }
   .text-balance {
     text-wrap: balance;
@@ -45,13 +175,25 @@
     @apply bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 bg-clip-text text-transparent;
   }
   .gradient-btn {
-    @apply bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white hover:from-violet-500 hover:to-fuchsia-500 shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 active:scale-[0.97] transition-all font-medium;
+    @apply bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white hover:from-violet-500 hover:to-fuchsia-500 active:scale-[0.97] transition-all font-medium;
+    box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.25);
+  }
+  .gradient-btn:hover {
+    box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.4);
   }
   .gradient-btn-cyan {
-    @apply bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-500 hover:to-blue-500 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 active:scale-[0.97] transition-all font-medium;
+    @apply bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-500 hover:to-blue-500 active:scale-[0.97] transition-all font-medium;
+    box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.25);
+  }
+  .gradient-btn-cyan:hover {
+    box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.4);
   }
   .gradient-btn-amber {
-    @apply bg-gradient-to-r from-amber-600 to-orange-600 text-white hover:from-amber-500 hover:to-orange-500 shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 active:scale-[0.97] transition-all font-medium;
+    @apply bg-gradient-to-r from-amber-600 to-orange-600 text-white hover:from-amber-500 hover:to-orange-500 active:scale-[0.97] transition-all font-medium;
+    box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.25);
+  }
+  .gradient-btn-amber:hover {
+    box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.4);
   }
   .glow {
     box-shadow: 0 0 30px -5px rgba(139, 92, 246, 0.3);
@@ -65,16 +207,18 @@
 }
 
 body {
-  @apply bg-[#08080f] text-white/80 antialiased;
+  background-color: var(--bg-body);
+  color: var(--text-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Subtle animated background for app pages */
 .app-bg {
-  background: 
+  background:
     radial-gradient(ellipse at 20% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 20%, rgba(6, 182, 212, 0.06) 0%, transparent 50%),
     radial-gradient(ellipse at 50% 80%, rgba(236, 72, 153, 0.05) 0%, transparent 50%),
-    #08080f;
+    var(--bg-body);
 }
 
 ::-webkit-scrollbar {
@@ -82,8 +226,12 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  @apply bg-transparent;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
+  background-color: var(--glass-10);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--glass-8);
 }

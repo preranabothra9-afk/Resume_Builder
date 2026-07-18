@@ -26,7 +26,7 @@ const PersonalInfoForm = ({ data, onChange, removeBackground, setRemoveBackgroun
               alt="user"
               className="size-16 rounded-xl object-cover ring-2 ring-white/10 group-hover:ring-violet-500/50 transition-all" />
           ) : (
-            <div className="size-16 rounded-xl border-2 border-dashed border-white/10 flex items-center justify-center text-white/30 group-hover:border-violet-500/40 group-hover:text-violet-400 transition-all">
+            <div className="size-16 rounded-xl border-2 border-dashed border-theme flex items-center justify-center text-faint group-hover:border-violet-500/40 group-hover:text-violet-400 transition-all">
               <ImagePlus className="size-6" />
             </div>
           )}
@@ -35,17 +35,17 @@ const PersonalInfoForm = ({ data, onChange, removeBackground, setRemoveBackgroun
         </label>
 
         <div>
-          <p className="text-sm font-medium text-white/70">Profile Photo</p>
-          <p className="text-xs text-white/30">Upload your photo</p>
+          <p className="text-sm font-medium text-muted">Profile Photo</p>
+          <p className="text-xs text-faint">Upload your photo</p>
           {data.image && (
             <label className="inline-flex items-center gap-2 mt-1.5 cursor-pointer">
               <input type="checkbox" className="sr-only peer"
                 onChange={() => { setRemoveBackground((prev) => !prev); setIsEditing(true); }}
                 checked={removeBackground} disabled={savingStatus === "saving"} />
-              <div className="w-8 h-4 bg-white/10 rounded-full peer-checked:bg-violet-600 transition-colors relative">
+              <div className="w-8 h-4 bg-glass-10 rounded-full peer-checked:bg-violet-600 transition-colors relative">
                 <span className="absolute left-0.5 top-0.5 w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-4" />
               </div>
-              <span className="text-xs text-white/40">Remove bg</span>
+              <span className="text-xs text-subtle">Remove bg</span>
             </label>
           )}
         </div>
@@ -56,8 +56,8 @@ const PersonalInfoForm = ({ data, onChange, removeBackground, setRemoveBackgroun
           const Icon = field.icon;
           return (
             <div key={field.key}>
-              <label className="flex items-center gap-1.5 text-xs font-medium text-white/50 mb-1.5">
-                <Icon className="size-3.5 text-white/30" />
+              <label className="flex items-center gap-1.5 text-xs font-medium text-dim mb-1.5">
+                <Icon className="size-3.5 text-faint" />
                 {field.label}
                 {field.required && <span className="text-rose-400">*</span>}
               </label>

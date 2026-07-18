@@ -19,7 +19,7 @@ const EducationForm = ({ data, onChange }) => {
   return (
     <div className='space-y-4'>
       <div className='flex items-center justify-between'>
-        <p className='text-sm text-white/40'>Add your education details.</p>
+        <p className='text-sm text-subtle'>Add your education details.</p>
         <button onClick={addEducation}
           className='flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-violet-500/15 text-violet-300 hover:bg-violet-500/25 transition-colors border border-violet-500/20'>
           <Plus className='size-3.5' /> Add
@@ -27,17 +27,17 @@ const EducationForm = ({ data, onChange }) => {
       </div>
 
       {data.length === 0 ? (
-        <div className='text-center py-10 text-white/20'>
-          <GraduationCap className='size-10 mx-auto mb-3 text-white/10' />
-          <p className='text-sm font-medium text-white/30'>No education added</p>
+        <div className='text-center py-10 text-hidden'>
+          <GraduationCap className='size-10 mx-auto mb-3 text-hidden' />
+          <p className='text-sm font-medium text-faint'>No education added</p>
           <p className='text-xs mt-1'>Click "Add" to get started.</p>
         </div>
       ) : (
         <div className='space-y-3'>
           {data.map((education, index) => (
-            <div key={index} className='p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] space-y-3'>
+            <div key={index} className='p-4 rounded-xl bg-glass-3 border border-theme-light space-y-3'>
               <div className='flex items-center justify-between'>
-                <span className='text-xs font-medium text-white/20'>#{index + 1}</span>
+                <span className='text-xs font-medium text-hidden'>#{index + 1}</span>
                 <button onClick={() => removeEducation(index)}
                   className='text-rose-400/60 hover:text-rose-400 transition-colors p-1 hover:bg-rose-500/10 rounded-lg'>
                   <Trash2 className='size-3.5' />

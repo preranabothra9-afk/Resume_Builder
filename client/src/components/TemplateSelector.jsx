@@ -14,18 +14,18 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
   return (
     <div className='relative'>
       <button onClick={() => setIsOpen(!isOpen)}
-        className='flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl border border-white/10 text-white/50 hover:text-violet-300 hover:border-violet-500/30 hover:bg-violet-500/10 transition-all'>
+        className='flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl border border-theme text-dim transition-all'>
         <Layout size={14} /> Template
       </button>
 
       {isOpen && (
-        <div className='absolute top-full left-0 w-64 p-2 mt-1.5 space-y-1.5 z-50 bg-[#12121a] border border-white/[0.08] rounded-xl shadow-2xl shadow-black/50'>
+        <div className='absolute top-full left-0 w-64 p-2 mt-1.5 space-y-1.5 z-50 bg-elevated border border-theme-medium rounded-xl shadow-2xl' style={{ boxShadow: '0 25px 50px -12px var(--shadow-modal)' }}>
           {templates.map((template) => (
             <div key={template.id}
               onClick={() => { onChange(template.id); setIsOpen(false) }}
               className={`relative p-3 rounded-lg cursor-pointer transition-all ${selectedTemplate === template.id
                 ? "bg-violet-500/10 border border-violet-500/30"
-                : "border border-transparent hover:bg-white/[0.04]"
+                : "border border-transparent hover-bg-glass-4"
                 }`}>
 
               {selectedTemplate === template.id && (
@@ -36,8 +36,8 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
                 </div>
               )}
 
-              <h4 className='text-sm font-medium text-white/80'>{template.name}</h4>
-              <p className='mt-1 text-xs text-white/30 leading-relaxed'>{template.preview}</p>
+              <h4 className='text-sm font-medium text-body'>{template.name}</h4>
+              <p className='mt-1 text-xs text-faint leading-relaxed'>{template.preview}</p>
             </div>
           ))}
         </div>

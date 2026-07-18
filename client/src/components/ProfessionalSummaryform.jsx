@@ -28,7 +28,7 @@ const ProfessionalSummaryform = ({ data, onChange, setResumeData }) => {
   return (
     <div className='space-y-4'>
       <div className='flex items-center justify-between'>
-        <p className='text-sm text-white/40'>Add a compelling professional summary.</p>
+        <p className='text-sm text-subtle'>Add a compelling professional summary.</p>
         <button disabled={isgenerating} onClick={generateSummary}
           className='flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-violet-500/15 text-violet-300 hover:bg-violet-500/25 transition-colors disabled:opacity-50 border border-violet-500/20'>
           {isgenerating ? <Loader2 className='size-3.5 animate-spin' /> : <Sparkles className='size-3.5' />}
@@ -37,9 +37,9 @@ const ProfessionalSummaryform = ({ data, onChange, setResumeData }) => {
       </div>
 
       <textarea value={data || ""} onChange={(e) => onChange(e.target.value)} rows={7}
-        className='w-full resize-none bg-white/[0.03]'
+        className='w-full resize-none bg-glass-3'
         placeholder='Write a compelling professional summary...' />
-      <p className='text-xs text-white/20 text-center'>Tip: Keep it concise (3-4 sentences) and focus on achievements.</p>
+      <p className='text-xs text-hidden text-center'>Tip: Keep it concise (3-4 sentences) and focus on achievements.</p>
     </div>
   )
 }

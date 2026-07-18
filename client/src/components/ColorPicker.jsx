@@ -21,12 +21,12 @@ const ColorPicker = ({ selectedColor, onChange }) => {
   return (
     <div className='relative'>
       <button onClick={() => setIsOpen(!isOpen)}
-        className='flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl border border-white/10 text-white/50 hover:text-violet-300 hover:border-violet-500/30 hover:bg-violet-500/10 transition-all'>
+        className='flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-xl border border-theme text-dim transition-all'>
         <Palette size={14} /> Accent
       </button>
 
       {isOpen && (
-        <div className='absolute top-full right-0 grid grid-cols-5 gap-1.5 w-56 p-2.5 mt-1.5 z-50 bg-[#12121a] border border-white/[0.08] rounded-xl shadow-2xl shadow-black/50'>
+        <div className='absolute top-full right-0 grid grid-cols-5 gap-1.5 w-56 p-2.5 mt-1.5 z-50 bg-elevated border border-theme-medium rounded-xl shadow-2xl' style={{ boxShadow: '0 25px 50px -12px var(--shadow-modal)' }}>
           {colors.map((color) => (
             <div key={color.value}
               className='relative cursor-pointer group flex flex-col items-center'
@@ -38,7 +38,7 @@ const ColorPicker = ({ selectedColor, onChange }) => {
                   <Check className='size-5 text-white drop-shadow-lg' />
                 </div>
               )}
-              <p className='text-[10px] text-center mt-1 text-white/40'>{color.name}</p>
+              <p className='text-[10px] text-center mt-1 text-subtle'>{color.name}</p>
             </div>
           ))}
         </div>

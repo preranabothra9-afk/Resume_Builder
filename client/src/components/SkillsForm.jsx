@@ -21,7 +21,7 @@ const SkillsForm = ({ data, onChange }) => {
 
   return (
     <div className='space-y-4'>
-      <p className='text-sm text-white/40'>Add your technical and soft skills.</p>
+      <p className='text-sm text-subtle'>Add your technical and soft skills.</p>
 
       <div className='flex gap-2'>
         <input type="text" placeholder='Enter a skill...' className='flex-1'
@@ -45,9 +45,9 @@ const SkillsForm = ({ data, onChange }) => {
           ))}
         </div>
       ) : (
-        <div className='text-center py-8 text-white/20'>
-          <Sparkles className='size-8 mx-auto mb-2 text-white/10' />
-          <p className='text-sm font-medium text-white/30'>No skills added</p>
+        <div className='text-center py-8 text-hidden'>
+          <Sparkles className='size-8 mx-auto mb-2 text-hidden' />
+          <p className='text-sm font-medium text-faint'>No skills added</p>
           <p className='text-xs mt-1'>Add your skills above.</p>
         </div>
       )}

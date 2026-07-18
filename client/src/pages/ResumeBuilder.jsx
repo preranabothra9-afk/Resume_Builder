@@ -156,7 +156,7 @@ const ResumeBuilder = () => {
       <div className='max-w-7xl mx-auto px-4 py-6'>
         {/* Top bar */}
         <div className='flex items-center justify-between mb-6'>
-          <Link to='/app' className='inline-flex gap-2 items-center text-white/40 hover:text-violet-400 transition-colors font-medium text-sm'>
+          <Link to='/app' className='inline-flex gap-2 items-center text-subtle hover:text-violet-400 transition-colors font-medium text-sm'>
             <ArrowLeftIcon className='size-4' />Back to Dashboard
           </Link>
           <div className='flex items-center gap-2'>
@@ -170,7 +170,7 @@ const ResumeBuilder = () => {
           <div className='lg:col-span-5'>
             <div className='glass-card rounded-2xl overflow-hidden'>
               {/* Neon progress bar */}
-              <div className='h-0.75 bg-white/5'>
+              <div className='h-0.75 bg-glass-5'>
                 <div className='h-full bg-linear-to-r from-violet-500 via-fuchsia-500 to-cyan-500 transition-all duration-500 glow' style={{ width: `${((activeSectionIndex + 1) / sections.length) * 100}%` }} />
               </div>
 
@@ -185,7 +185,7 @@ const ResumeBuilder = () => {
                         onClick={() => setActiveSectionIndex(index)}
                         className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-200 ${isActive
                           ? 'bg-violet-500/15 text-violet-300 border border-violet-500/20'
-                          : 'text-white/40 hover:bg-white/4 hover:text-white/60 border border-transparent'
+                          : 'text-subtle hover-bg-glass-4 hover-text-primary border border-transparent'
                           }`}>
                         <Icon className='size-3.5' />
                         <span className='max-sm:hidden'>{section.name}</span>
@@ -196,7 +196,7 @@ const ResumeBuilder = () => {
 
                 {/* Save status + heading */}
                 <div className='flex items-center justify-between mb-4'>
-                  <h2 className='text-lg font-semibold text-white'>{activeSection.name}</h2>
+                  <h2 className='text-lg font-semibold text-primary'>{activeSection.name}</h2>
                   <div className='text-xs font-medium'>
                     {savingStatus === "saving" && (
                       <span className='text-cyan-400 flex items-center gap-1'>
@@ -253,12 +253,12 @@ const ResumeBuilder = () => {
             <div className='flex items-center justify-end gap-2 mb-4 flex-wrap'>
               {resumeData.public && (
                 <button onClick={handleShare}
-                  className='flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-white/10 text-white/50 hover:text-cyan-400 hover:border-cyan-500/30 hover:bg-cyan-500/10 transition-all'>
+                  className='flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-theme text-dim transition-all'>
                   <Share2Icon className='size-3.5' /> Share
                 </button>
               )}
               <button onClick={changeResumeVisibility}
-                className='flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-white/10 text-white/50 hover:text-violet-400 hover:border-violet-500/30 hover:bg-violet-500/10 transition-all'>
+                className='flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-theme text-dim transition-all'>
                 {resumeData.public ? <EyeIcon className='size-3.5' /> : <EyeOff className='size-3.5' />}
                 {resumeData.public ? 'Public' : 'Private'}
               </button>
@@ -288,11 +288,13 @@ const ResumeBuilder = () => {
 
       {/* Export Modal */}
       {showExport && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'var(--bg-overlay)', backdropFilter: 'blur(4px)' }}
           onClick={() => setShowExport(false)}>
-          <div className="bg-[#12121a] border border-white/8 rounded-2xl w-80 p-6 shadow-2xl shadow-black/50"
+          <div className="bg-elevated border border-theme-medium rounded-2xl w-80 p-6 shadow-2xl"
+            style={{ boxShadow: '0 25px 50px -12px var(--shadow-modal)' }}
             onClick={e => e.stopPropagation()}>
-            <h2 className="text-lg font-semibold text-white mb-4">Export Resume</h2>
+            <h2 className="text-lg font-semibold text-primary mb-4">Export Resume</h2>
             <div className="flex flex-col gap-2">
               {[
                 { label: 'PDF', gradient: 'from-violet-600 to-fuchsia-600' },
@@ -308,7 +310,7 @@ const ResumeBuilder = () => {
               ))}
             </div>
             <button onClick={() => setShowExport(false)}
-              className="mt-3 text-sm text-white/40 hover:text-white/60 font-medium transition-colors w-full py-2 rounded-xl border border-white/10 hover:bg-white/5">
+              className="mt-3 text-sm text-subtle hover-text-primary font-medium transition-colors w-full py-2 rounded-xl border border-theme hover-bg-glass-5">
               Cancel
             </button>
           </div>

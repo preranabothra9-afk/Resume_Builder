@@ -100,41 +100,41 @@ const Dashboard = () => {
         {/* Header */}
         <div className='flex items-center justify-between mb-10'>
           <div>
-            <h1 className='text-3xl font-bold text-white'>My Resumes</h1>
-            <p className='text-white/40 text-sm mt-1'>Manage your resume collection</p>
+            <h1 className='text-3xl font-bold text-primary'>My Resumes</h1>
+            <p className='text-subtle text-sm mt-1'>Manage your resume collection</p>
           </div>
-          <div className='hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.04] border border-white/[0.06]'>
+          <div className='hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-glass-4 border border-theme-light'>
             <div className='size-2 rounded-full bg-emerald-500 animate-pulse' />
-            <span className='text-white/40 text-xs'>{allResumes.length} resume{allResumes.length !== 1 ? 's' : ''}</span>
+            <span className='text-subtle text-xs'>{allResumes.length} resume{allResumes.length !== 1 ? 's' : ''}</span>
           </div>
         </div>
 
         {/* Action Buttons */}
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12'>
           <button onClick={() => setShowCreateResume(true)}
-            className='relative group overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-br from-violet-500/10 via-fuchsia-500/5 to-transparent p-6 text-left hover:from-violet-500/20 hover:via-fuchsia-500/10 hover:to-transparent transition-all duration-500 card-hover'>
+            className='relative group overflow-hidden rounded-2xl border border-theme-light bg-gradient-to-br from-violet-500/10 via-fuchsia-500/5 to-transparent p-6 text-left hover:from-violet-500/20 hover:via-fuchsia-500/10 hover:to-transparent transition-all duration-500 card-hover'>
             <div className='absolute top-0 right-0 size-32 bg-violet-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-violet-500/20 transition-all duration-500' />
             <div className='relative flex items-center gap-5'>
               <div className='size-14 rounded-2xl gradient-btn flex items-center justify-center shadow-lg shadow-violet-500/30 group-hover:scale-110 transition-transform duration-300'>
                 <PlusIcon className='size-7' />
               </div>
               <div>
-                <p className='text-white font-semibold text-lg'>Create Resume</p>
-                <p className='text-white/40 text-sm mt-0.5'>Start from scratch with AI assistance</p>
+                <p className='text-primary font-semibold text-lg'>Create Resume</p>
+                <p className='text-subtle text-sm mt-0.5'>Start from scratch with AI assistance</p>
               </div>
             </div>
           </button>
 
           <button onClick={() => setShowUploadResume(true)}
-            className='relative group overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-transparent p-6 text-left hover:from-cyan-500/20 hover:via-blue-500/10 hover:to-transparent transition-all duration-500 card-hover'>
+            className='relative group overflow-hidden rounded-2xl border border-theme-light bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-transparent p-6 text-left hover:from-cyan-500/20 hover:via-blue-500/10 hover:to-transparent transition-all duration-500 card-hover'>
             <div className='absolute top-0 right-0 size-32 bg-cyan-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-cyan-500/20 transition-all duration-500' />
             <div className='relative flex items-center gap-5'>
               <div className='size-14 rounded-2xl gradient-btn-cyan flex items-center justify-center shadow-lg shadow-cyan-500/30 group-hover:scale-110 transition-transform duration-300'>
                 <UploadCloudIcon className='size-7' />
               </div>
               <div>
-                <p className='text-white font-semibold text-lg'>Upload Resume</p>
-                <p className='text-white/40 text-sm mt-0.5'>Parse existing PDF with AI</p>
+                <p className='text-primary font-semibold text-lg'>Upload Resume</p>
+                <p className='text-subtle text-sm mt-0.5'>Parse existing PDF with AI</p>
               </div>
             </div>
           </button>
@@ -143,7 +143,7 @@ const Dashboard = () => {
         {/* Resume Grid */}
         {allResumes.length > 0 && (
           <div className='mb-6'>
-            <h2 className='text-sm font-medium text-white/30 uppercase tracking-widest mb-4'>All Resumes</h2>
+            <h2 className='text-sm font-medium text-faint uppercase tracking-widest mb-4'>All Resumes</h2>
           </div>
         )}
 
@@ -158,16 +158,16 @@ const Dashboard = () => {
                 onClick={() => navigate(`/app/builder/${resume._id}`)}
                 className={`relative group rounded-2xl border ${borderColors[gi]} bg-gradient-to-br ${gradients[gi]} p-5 text-left transition-all duration-300 card-hover overflow-hidden`}
               >
-                <div className='absolute top-0 right-0 size-24 bg-white/[0.02] rounded-full blur-2xl' />
+                <div className='absolute top-0 right-0 size-24 bg-glass-2 rounded-full blur-2xl' />
 
                 <div className='relative'>
                   {/* Action buttons */}
                   <div className='absolute top-0 right-0 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200'>
-                    <span className='p-2 rounded-lg bg-white/[0.08] hover:bg-white/20 transition-colors border border-white/[0.06]'
+                    <span className='p-2 rounded-lg bg-glass-8 hover-bg-glass-10 transition-colors border border-theme-light'
                       onClick={(e) => { e.stopPropagation(); setEditResumeId(resume._id); setTitle(resume.title); }}>
-                      <PencilIcon className='size-3.5 text-white/70' />
+                      <PencilIcon className='size-3.5 text-muted' />
                     </span>
-                    <span className='p-2 rounded-lg bg-white/[0.08] hover:bg-rose-500/20 transition-colors border border-white/[0.06]'
+                    <span className='p-2 rounded-lg bg-glass-8 hover:bg-rose-500/20 transition-colors border border-theme-light'
                       onClick={(e) => { e.stopPropagation(); deleteResume(resume._id); }}>
                       <TrashIcon className='size-3.5 text-rose-400' />
                     </span>
@@ -179,15 +179,15 @@ const Dashboard = () => {
                   </div>
 
                   {/* Title */}
-                  <p className='text-white font-semibold text-base mb-1 line-clamp-1 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/60 group-hover:bg-clip-text transition-all'>
+                  <p className='text-primary font-semibold text-base mb-1 line-clamp-1 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/60 group-hover:bg-clip-text transition-all'>
                     {resume.title}
                   </p>
 
                   {/* Date */}
-                  <p className='text-white/30 text-xs'>{new Date(resume.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                  <p className='text-faint text-xs'>{new Date(resume.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
 
                   {/* Analytics link */}
-                  <span className='inline-flex items-center gap-1.5 mt-3 text-xs text-white/30 hover:text-white/60 transition-colors'
+                  <span className='inline-flex items-center gap-1.5 mt-3 text-xs text-faint hover-text-primary transition-colors'
                     onClick={(e) => { e.stopPropagation(); navigate(`/app/builder/${resume._id}#analytics`); }}>
                     <BarChart3 className='size-3' />
                     Analytics
@@ -200,11 +200,11 @@ const Dashboard = () => {
 
         {allResumes.length === 0 && (
           <div className='text-center py-20'>
-            <div className='inline-flex size-16 rounded-2xl bg-white/[0.04] border border-white/[0.06] items-center justify-center mb-4'>
-              <Sparkles className='size-7 text-white/20' />
+            <div className='inline-flex size-16 rounded-2xl bg-glass-4 border border-theme-light items-center justify-center mb-4'>
+              <Sparkles className='size-7 text-hidden' />
             </div>
-            <p className='text-white/40 font-medium'>No resumes yet</p>
-            <p className='text-white/20 text-sm mt-1'>Create or upload your first resume to get started</p>
+            <p className='text-subtle font-medium'>No resumes yet</p>
+            <p className='text-faint text-sm mt-1'>Create or upload your first resume to get started</p>
           </div>
         )}
       </div>
@@ -212,15 +212,15 @@ const Dashboard = () => {
       {/* Create Modal */}
       {showCreateResume && (
         <form onSubmit={createResume} onClick={() => setShowCreateResume(false)}
-          className='fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4'>
+          className='fixed inset-0 z-50 flex items-center justify-center p-4' style={{ backgroundColor: 'var(--bg-overlay)', backdropFilter: 'blur(4px)' }}>
           <div onClick={e => e.stopPropagation()}
-            className='relative bg-[#12121a] border border-white/[0.08] rounded-2xl w-full max-w-sm p-6 shadow-2xl shadow-black/50'>
-            <h2 className='text-lg font-semibold text-white mb-1'>Create a resume</h2>
-            <p className='text-white/30 text-sm mb-5'>Give your resume a name to get started</p>
+            className='relative bg-elevated border border-theme-medium rounded-2xl w-full max-w-sm p-6 shadow-2xl' style={{ boxShadow: '0 25px 50px -12px var(--shadow-modal)' }}>
+            <h2 className='text-lg font-semibold text-primary mb-1'>Create a resume</h2>
+            <p className='text-faint text-sm mb-5'>Give your resume a name to get started</p>
             <input onChange={(e) => setTitle(e.target.value)} value={title}
               type="text" placeholder='e.g. Software Engineer Resume' className='w-full mb-4' required autoFocus />
             <button className='w-full py-2.5 gradient-btn rounded-xl text-sm'>Create</button>
-            <XIcon className='absolute top-4 right-4 text-white/30 hover:text-white/60 cursor-pointer transition-colors size-5'
+            <XIcon className='absolute top-4 right-4 text-faint hover-text-primary cursor-pointer transition-colors size-5'
               onClick={() => { setShowCreateResume(false); setTitle(''); }} />
           </div>
         </form>
@@ -229,23 +229,23 @@ const Dashboard = () => {
       {/* Upload Modal */}
       {showUploadResume && (
         <form onSubmit={uploadResume} onClick={() => setShowUploadResume(false)}
-          className='fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4'>
+          className='fixed inset-0 z-50 flex items-center justify-center p-4' style={{ backgroundColor: 'var(--bg-overlay)', backdropFilter: 'blur(4px)' }}>
           <div onClick={e => e.stopPropagation()}
-            className='relative bg-[#12121a] border border-white/[0.08] rounded-2xl w-full max-w-sm p-6 shadow-2xl shadow-black/50'>
-            <h2 className='text-lg font-semibold text-white mb-1'>Upload resume</h2>
-            <p className='text-white/30 text-sm mb-5'>AI will extract content from your PDF</p>
+            className='relative bg-elevated border border-theme-medium rounded-2xl w-full max-w-sm p-6 shadow-2xl' style={{ boxShadow: '0 25px 50px -12px var(--shadow-modal)' }}>
+            <h2 className='text-lg font-semibold text-primary mb-1'>Upload resume</h2>
+            <p className='text-faint text-sm mb-5'>AI will extract content from your PDF</p>
             <input onChange={(e) => setTitle(e.target.value)} value={title}
               type="text" placeholder='Resume title' className='w-full mb-4' required />
             <div>
-              <label htmlFor="resume-input" className='block text-sm text-white/50 font-medium'>
+              <label htmlFor="resume-input" className='block text-sm text-dim font-medium'>
                 Select File
-                <div className='flex flex-col items-center justify-center gap-2 border-2 border-dashed border-white/10 rounded-xl p-5 my-3 hover:border-violet-500/40 hover:bg-violet-500/5 cursor-pointer transition-all duration-200'>
+                <div className='flex flex-col items-center justify-center gap-2 border-2 border-dashed border-theme rounded-xl p-5 my-3 hover:border-violet-500/40 hover:bg-violet-500/5 cursor-pointer transition-all duration-200'>
                   {resume ? (
                     <p className='text-violet-400 font-medium text-sm'>{resume.name}</p>
                   ) : (
                     <>
-                      <UploadCloud className='size-10 stroke-1 text-white/20' />
-                      <p className='text-xs text-white/30'>Click to upload PDF</p>
+                      <UploadCloud className='size-10 stroke-1 text-hidden' />
+                      <p className='text-xs text-faint'>Click to upload PDF</p>
                     </>
                   )}
                 </div>
@@ -257,7 +257,7 @@ const Dashboard = () => {
               {isLoading && <LoaderCircleIcon className='animate-spin size-4' />}
               {isLoading ? 'Analyzing...' : 'Upload & Parse'}
             </button>
-            <XIcon className='absolute top-4 right-4 text-white/30 hover:text-white/60 cursor-pointer transition-colors size-5'
+            <XIcon className='absolute top-4 right-4 text-faint hover-text-primary cursor-pointer transition-colors size-5'
               onClick={() => { setShowUploadResume(false); setTitle(''); setResume(null); }} />
           </div>
         </form>
@@ -266,15 +266,15 @@ const Dashboard = () => {
       {/* Edit Title Modal */}
       {editResumeId && (
         <form onSubmit={editResume} onClick={() => setEditResumeId('')}
-          className='fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4'>
+          className='fixed inset-0 z-50 flex items-center justify-center p-4' style={{ backgroundColor: 'var(--bg-overlay)', backdropFilter: 'blur(4px)' }}>
           <div onClick={e => e.stopPropagation()}
-            className='relative bg-[#12121a] border border-white/[0.08] rounded-2xl w-full max-w-sm p-6 shadow-2xl shadow-black/50'>
-            <h2 className='text-lg font-semibold text-white mb-1'>Edit title</h2>
-            <p className='text-white/30 text-sm mb-5'>Update your resume name</p>
+            className='relative bg-elevated border border-theme-medium rounded-2xl w-full max-w-sm p-6 shadow-2xl' style={{ boxShadow: '0 25px 50px -12px var(--shadow-modal)' }}>
+            <h2 className='text-lg font-semibold text-primary mb-1'>Edit title</h2>
+            <p className='text-faint text-sm mb-5'>Update your resume name</p>
             <input onChange={(e) => setTitle(e.target.value)} value={title}
               type="text" placeholder='Enter resume title' className='w-full mb-4' required autoFocus />
             <button className='w-full py-2.5 gradient-btn-amber rounded-xl text-sm'>Update</button>
-            <XIcon className='absolute top-4 right-4 text-white/30 hover:text-white/60 cursor-pointer transition-colors size-5'
+            <XIcon className='absolute top-4 right-4 text-faint hover-text-primary cursor-pointer transition-colors size-5'
               onClick={() => { setEditResumeId(''); setTitle(''); }} />
           </div>
         </form>

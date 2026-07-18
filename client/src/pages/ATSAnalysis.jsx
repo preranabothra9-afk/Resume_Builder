@@ -97,17 +97,17 @@ const ATSAnalysis = () => {
 
   return (
     <div className="app-bg min-h-screen">
-      <header className="sticky top-0 z-40 bg-[#0e0e1a]/90 backdrop-blur-xl border-b border-white/[0.06]">
+      <header className="sticky top-0 z-40 backdrop-blur-xl border-b" style={{ backgroundColor: 'var(--bg-nav)', borderColor: 'var(--border-light)' }}>
         <div className="absolute inset-0 bg-gradient-to-r from-violet-500/10 via-transparent to-cyan-500/10 pointer-events-none" />
         <nav className="relative flex items-center justify-between max-w-7xl mx-auto py-3.5 px-4">
           <Link to="/" className="flex items-center gap-2.5 group">
             <div className="size-9 rounded-xl gradient-btn flex items-center justify-center text-sm font-bold shadow-lg shadow-violet-500/30 group-hover:scale-105 transition-transform">
               RB
             </div>
-            <span className="text-white font-semibold text-sm">ResumeBuilder</span>
+            <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>ResumeBuilder</span>
           </Link>
           <div className="flex items-center gap-2">
-            <Link to="/" className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/10 text-white/50 hover:text-white hover:border-white/30 transition-all text-sm">
+            <Link to="/" className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all text-sm" style={{ borderColor: 'var(--border)', color: 'var(--text-dim)' }}>
               Home
             </Link>
             <Link to="/app" className="gradient-btn rounded-xl px-4 py-2 text-sm glow">
@@ -118,7 +118,7 @@ const ATSAnalysis = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <Link to="/" className="inline-flex gap-2 items-center text-white/40 hover:text-violet-400 transition-colors font-medium text-sm mb-8">
+        <Link to="/" className="inline-flex gap-2 items-center text-subtle hover:text-violet-400 transition-colors font-medium text-sm mb-8">
           <ArrowLeft className="size-4" />
           Back to Home
         </Link>
@@ -129,10 +129,10 @@ const ATSAnalysis = () => {
               <div className="h-[3px] bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-500 glow" />
               <div className="p-6">
                 <div className="flex items-center gap-2.5 mb-2">
-                  <FileSearch className="size-5 text-white/40" />
-                  <h1 className="text-2xl font-bold text-white">ATS Analysis</h1>
+                  <FileSearch className="size-5 text-subtle" />
+                  <h1 className="text-2xl font-bold text-primary">ATS Analysis</h1>
                 </div>
-                <p className="text-sm text-white/40 leading-relaxed mb-6">
+                <p className="text-sm text-subtle leading-relaxed mb-6">
                   Upload a PDF resume or paste resume text, then compare it with a target job description.
                 </p>
 
@@ -141,17 +141,17 @@ const ATSAnalysis = () => {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isParsing}
-                    className="w-full flex flex-col items-center justify-center gap-3 border-2 border-dashed border-white/10 rounded-xl p-6 hover:border-cyan-500/40 hover:bg-cyan-500/5 transition-all disabled:opacity-60"
+                    className="w-full flex flex-col items-center justify-center gap-3 border-2 border-dashed border-theme rounded-xl p-6 hover:border-cyan-500/40 hover:bg-cyan-500/5 transition-all disabled:opacity-60"
                   >
                     {isParsing ? (
                       <LoaderCircle className="size-9 animate-spin text-cyan-300" />
                     ) : (
-                      <UploadCloud className="size-10 stroke-1 text-white/25" />
+                      <UploadCloud className="size-10 stroke-1 text-hidden" />
                     )}
-                    <span className="text-sm font-medium text-white/70">
+                    <span className="text-sm font-medium text-muted">
                       {isParsing ? "Parsing resume..." : fileName || "Upload PDF Resume"}
                     </span>
-                    <span className="text-xs text-white/30">PDF text is extracted in your browser.</span>
+                    <span className="text-xs text-faint">PDF text is extracted in your browser.</span>
                   </button>
                   <input
                     ref={fileInputRef}
@@ -162,7 +162,7 @@ const ATSAnalysis = () => {
                   />
 
                   <div>
-                    <label htmlFor="resume-text" className="block text-sm font-medium text-white/70 mb-2">
+                    <label htmlFor="resume-text" className="block text-sm font-medium text-muted mb-2">
                       Resume text
                     </label>
                     <textarea
@@ -191,7 +191,7 @@ const ATSAnalysis = () => {
                     <button
                       type="button"
                       onClick={clearResume}
-                      className="rounded-xl px-4 py-2.5 text-sm border border-white/10 text-white/50 hover:text-rose-300 hover:border-rose-500/30 hover:bg-rose-500/10 flex items-center justify-center gap-2"
+                      className="rounded-xl px-4 py-2.5 text-sm border border-theme text-dim flex items-center justify-center gap-2"
                     >
                       <X className="size-4" />
                       Clear
@@ -204,11 +204,11 @@ const ATSAnalysis = () => {
             <div className="glass-card rounded-2xl p-5 mt-6">
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles className="size-4 text-amber-300" />
-                <h2 className="text-sm font-semibold text-white/80">What gets checked</h2>
+                <h2 className="text-sm font-semibold text-body">What gets checked</h2>
               </div>
-              <div className="grid sm:grid-cols-2 gap-2 text-xs text-white/35">
+              <div className="grid sm:grid-cols-2 gap-2 text-xs text-faint">
                 {["Keyword match", "Missing keywords", "Contact details", "Summary strength", "Skills coverage", "Measurable impact", "Education", "Projects"].map((item) => (
-                  <div key={item} className="rounded-lg bg-white/[0.03] border border-white/[0.05] px-3 py-2">
+                  <div key={item} className="rounded-lg bg-glass-3 border border-theme-light px-3 py-2">
                     {item}
                   </div>
                 ))}

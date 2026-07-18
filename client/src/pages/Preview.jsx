@@ -46,7 +46,7 @@ const Preview = () => {
         <div className='app-bg flex flex-col items-center justify-center min-h-screen'>
           <div className='text-center'>
             <div className='text-6xl font-bold gradient-text mb-4'>404</div>
-            <p className='text-lg text-white/50 font-medium'>Resume Not Found</p>
+            <p className='text-lg text-dim font-medium'>Resume Not Found</p>
             <a href="/" className='inline-flex items-center gap-2 mt-6 gradient-btn rounded-xl px-6 py-2.5 text-sm glow'>
               <ArrowLeft className='size-4' />
               Go to home

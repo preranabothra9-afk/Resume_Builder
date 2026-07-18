@@ -57,7 +57,7 @@ const Features = () => {
   ];
 
   return (
-    <div id='features' className='relative bg-[#08080f] py-28 px-4 scroll-mt-12 overflow-hidden'>
+    <div id='features' className='relative bg-body py-28 px-4 scroll-mt-12 overflow-hidden'>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-gradient-to-br from-violet-600/5 via-fuchsia-600/5 to-cyan-600/5 rounded-full blur-[150px]" />
 
       <div className="relative max-w-7xl mx-auto">
@@ -74,14 +74,14 @@ const Features = () => {
               const Icon = feature.icon;
               return (
                 <div key={index}
-                  className={`group relative p-6 rounded-2xl border ${feature.border} ${feature.bg} hover:bg-white/[0.04] transition-all duration-500 card-hover overflow-hidden`}>
+                  className={`group relative p-6 rounded-2xl border ${feature.border} ${feature.bg} hover-bg-glass-4 transition-all duration-500 card-hover overflow-hidden`}>
                   <div className={`absolute top-0 right-0 size-32 bg-gradient-to-br ${feature.gradient} rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 -translate-y-1/2 translate-x-1/2`} />
                   <div className="relative">
                     <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                       <Icon className="size-6 text-white" />
                     </div>
-                    <h3 className="text-base font-semibold text-white mb-2">{feature.title}</h3>
-                    <p className="text-sm text-white/40 leading-relaxed">{feature.description}</p>
+                    <h3 className="text-base font-semibold text-primary mb-2">{feature.title}</h3>
+                    <p className="text-sm text-subtle leading-relaxed">{feature.description}</p>
                     {feature.href && (
                       <Link to={feature.href} className="inline-flex items-center gap-1.5 mt-4 text-sm font-medium text-amber-300 hover:text-amber-200">
                         Open analysis

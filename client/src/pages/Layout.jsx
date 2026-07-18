@@ -16,7 +16,7 @@ const Layout = () => {
   return (
     <div>
       {user ? (
-        <div className='min-h-screen bg-[#08080f]'>
+        <div className='min-h-screen' style={{ backgroundColor: 'var(--bg-body)' }}>
           <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-500/5 via-transparent to-transparent pointer-events-none" />
           <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-cyan-500/5 via-transparent to-transparent pointer-events-none" />
           <Navbar />

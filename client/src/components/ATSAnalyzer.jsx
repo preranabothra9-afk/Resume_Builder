@@ -18,7 +18,7 @@ import toast from "react-hot-toast";
 import { analyzeATS } from "../utils/atsAnalysis";
 
 const scoreTone = (score) => {
-  if (score == null) return { text: "text-white/20", bar: "from-white/10 to-white/5", bg: "bg-white/5", border: "border-white/10" };
+  if (score == null) return { text: "text-hidden", bar: "from-white/10 to-white/5", bg: "bg-white/5", border: "border-theme" };
   if (score >= 80) return { text: "text-emerald-300", bar: "from-emerald-500 to-teal-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" };
   if (score >= 60) return { text: "text-amber-300", bar: "from-amber-500 to-orange-400", bg: "bg-amber-500/10", border: "border-amber-500/20" };
   return { text: "text-rose-300", bar: "from-rose-500 to-pink-400", bg: "bg-rose-500/10", border: "border-rose-500/20" };
@@ -52,23 +52,23 @@ const ATSAnalyzer = ({
       <section className="glass-card rounded-2xl p-6">
         <div className="flex items-start justify-between gap-4 mb-6">
           <div className="flex items-center gap-2.5">
-            <FileSearch className="size-5 text-white/40" />
+            <FileSearch className="size-5 text-subtle" />
             <div>
-              <h2 className="text-lg font-semibold text-white">ATS Score Analysis</h2>
-              <p className="text-xs text-white/35 mt-0.5">Checks structure, keywords, readability, and recruiter scan quality.</p>
+              <h2 className="text-lg font-semibold text-primary">ATS Score Analysis</h2>
+              <p className="text-xs text-faint mt-0.5">Checks structure, keywords, readability, and recruiter scan quality.</p>
             </div>
           </div>
           <div className="size-24 rounded-full p-1 shrink-0" style={{ background: scoreRing }}>
-            <div className="size-full rounded-full bg-[#111119] border border-white/[0.06] flex flex-col items-center justify-center">
+            <div className="size-full rounded-full bg-ring border border-theme-light flex flex-col items-center justify-center">
               <span className={`text-3xl font-bold ${overallTone.text}`}>{analysis.scores.overall != null ? analysis.scores.overall : "--"}</span>
-              <span className="text-[10px] text-white/35">/ 100</span>
+              <span className="text-[10px] text-faint">/ 100</span>
             </div>
           </div>
         </div>
 
         <div className="rounded-xl bg-cyan-500/5 border border-cyan-500/15 px-4 py-3 mb-5">
           <p className="text-xs font-medium text-cyan-200">{sourceLabel}</p>
-          <p className="text-xs text-white/35 mt-1">
+          <p className="text-xs text-faint mt-1">
             {analysis.hasResumeContent ? "Resume content is ready for ATS scoring." : "Add resume content on this page to start the analysis."}
           </p>
         </div>
@@ -79,7 +79,7 @@ const ATSAnalyzer = ({
           <MetricCard icon={Sparkles} label="Impact Metrics" value={analysis.impactCount != null ? analysis.impactCount : "--"} />
         </div>
 
-        <label className="block text-sm font-medium text-white/70 mb-2" htmlFor="job-description">
+        <label className="block text-sm font-medium text-muted mb-2" htmlFor="job-description">
           Target job description
         </label>
         <textarea
@@ -124,21 +124,21 @@ const ATSAnalyzer = ({
 const MetricCard = memo(({ icon, label, value }) => {
   const iconElement = React.createElement(icon, { className: "size-4 text-cyan-300 mb-3" });
   return (
-    <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4">
+    <div className="rounded-xl bg-glass-3 border border-theme-light p-4">
       {iconElement}
-      <p className="text-xl font-bold text-white">{value}</p>
-      <p className="text-xs text-white/35 mt-0.5">{label}</p>
+      <p className="text-xl font-bold text-primary">{value}</p>
+      <p className="text-xs text-faint mt-0.5">{label}</p>
     </div>
   );
 });
 
 const Card = memo(({ icon, title, children }) => {
-  const iconElement = icon ? React.createElement(icon, { className: "size-5 text-white/40" }) : null;
+  const iconElement = icon ? React.createElement(icon, { className: "size-5 text-subtle" }) : null;
   return (
     <section className="glass-card rounded-2xl p-6">
       <div className="flex items-center gap-2.5 mb-5">
         {iconElement}
-        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        <h3 className="text-lg font-semibold text-primary">{title}</h3>
       </div>
       {children}
     </section>
@@ -150,10 +150,10 @@ const Progress = memo(({ value, label }) => {
   return (
     <div>
       <div className="flex justify-between items-center text-sm mb-2">
-        <span className="text-white/60">{label}</span>
+        <span className="text-muted">{label}</span>
         <span className={`font-semibold ${tone.text}`}>{value != null ? `${value}%` : "--"}</span>
       </div>
-      <div className="h-2.5 rounded-full bg-white/[0.06] overflow-hidden">
+      <div className="h-2.5 rounded-full bg-glass-6 overflow-hidden">
         <div className={`h-full rounded-full bg-gradient-to-r ${tone.bar}`} style={{ width: value != null ? `${value}%` : "0%" }} />
       </div>
     </div>
@@ -186,7 +186,7 @@ const Completeness = ({ checks, completion }) => {
         <>
           <div className="flex items-center justify-between gap-4 mb-5">
             <div>
-              <p className="text-sm text-white/40">Resume Complete</p>
+              <p className="text-sm text-subtle">Resume Complete</p>
               <p className={`text-3xl font-bold ${tone.text}`}>{completion}%</p>
             </div>
             <div className="flex-1 max-w-sm">
@@ -198,7 +198,7 @@ const Completeness = ({ checks, completion }) => {
           </div>
         </>
       ) : (
-        <p className="text-sm text-white/30">Upload a resume to see completeness analysis.</p>
+        <p className="text-sm text-faint">Upload a resume to see completeness analysis.</p>
       )}
     </Card>
   );
@@ -217,14 +217,14 @@ const Stats = ({ stats }) => (
           ["Skills", stats.skills],
           ["Reading Time", `${stats.readingTime}m`],
         ].map(([label, value]) => (
-          <div key={label} className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4">
-            <p className="text-xl font-bold text-white">{value}</p>
-            <p className="text-xs text-white/35 mt-1">{label}</p>
+          <div key={label} className="rounded-xl bg-glass-3 border border-theme-light p-4">
+            <p className="text-xl font-bold text-primary">{value}</p>
+            <p className="text-xs text-faint mt-1">{label}</p>
           </div>
         ))}
       </div>
     ) : (
-      <p className="text-sm text-white/30">Upload a resume to see statistics.</p>
+      <p className="text-sm text-faint">Upload a resume to see statistics.</p>
     )}
   </Card>
 );
@@ -243,8 +243,8 @@ const KeywordAnalysis = ({ keywords }) => {
               <Progress label="Keyword Match" value={keywords.score} />
             </div>
             <div className="text-right shrink-0">
-              <p className="text-2xl font-bold text-white">{keywords.score != null ? `${keywords.score}%` : "--"}</p>
-              <p className="text-xs text-white/30">{matchedCount} of {total} keywords</p>
+              <p className="text-2xl font-bold text-primary">{keywords.score != null ? `${keywords.score}%` : "--"}</p>
+              <p className="text-xs text-faint">{matchedCount} of {total} keywords</p>
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
@@ -254,7 +254,7 @@ const KeywordAnalysis = ({ keywords }) => {
         </>
       ) : (
         <div className="py-6 text-center">
-          <p className="text-sm text-white/30">Paste a job description above to calculate keyword match.</p>
+          <p className="text-sm text-faint">Paste a job description above to calculate keyword match.</p>
         </div>
       )}
     </Card>
@@ -264,8 +264,8 @@ const KeywordAnalysis = ({ keywords }) => {
 const KeywordGroup = memo(({ title, keywords, tone }) => {
   const matched = tone === "matched";
   return (
-    <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-4">
-      <p className="text-sm font-semibold text-white/70 mb-3">{title}</p>
+    <div className="rounded-xl bg-glass-2 border border-theme-light p-4">
+      <p className="text-sm font-semibold text-muted mb-3">{title}</p>
       <div className="flex flex-wrap gap-2">
         {keywords.length > 0 ? keywords.map((keyword) => (
           <span key={keyword} className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs border ${matched ? "bg-emerald-500/10 text-emerald-200 border-emerald-500/20" : "bg-amber-500/10 text-amber-200 border-amber-500/20"}`}>
@@ -273,7 +273,7 @@ const KeywordGroup = memo(({ title, keywords, tone }) => {
             {keyword}
           </span>
         )) : (
-          <span className="text-xs text-white/30">{matched ? "No matches yet" : "No missing keywords found"}</span>
+          <span className="text-xs text-faint">{matched ? "No matches yet" : "No missing keywords found"}</span>
         )}
       </div>
     </div>
@@ -285,15 +285,15 @@ const SectionAnalysis = ({ sections }) => (
     {sections.length > 0 ? (
       <div className="space-y-3">
         {sections.map((section) => (
-          <details key={section.section} className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-4 open:bg-white/[0.035]">
+          <details key={section.section} className="rounded-xl bg-glass-2 border border-theme-light p-4 open:bg-white/[0.035]">
             <summary className="cursor-pointer list-none flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold text-white/80">{section.section}</p>
-                <p className="text-xs text-white/35 mt-1">{section.feedback}</p>
+                <p className="text-sm font-semibold text-body">{section.section}</p>
+                <p className="text-xs text-faint mt-1">{section.feedback}</p>
               </div>
               <div className="text-right">
                 <Stars rating={section.rating} />
-                <p className="text-xs text-white/30 mt-1">{section.score}%</p>
+                <p className="text-xs text-faint mt-1">{section.score}%</p>
               </div>
             </summary>
             <div className="mt-4 space-y-2">
@@ -305,7 +305,7 @@ const SectionAnalysis = ({ sections }) => (
         ))}
       </div>
     ) : (
-      <p className="text-sm text-white/30">Upload a resume to see section-wise analysis.</p>
+      <p className="text-sm text-faint">Upload a resume to see section-wise analysis.</p>
     )}
   </Card>
 );
@@ -313,7 +313,7 @@ const SectionAnalysis = ({ sections }) => (
 const Stars = memo(({ rating }) => (
   <div className="flex gap-0.5 justify-end">
     {Array.from({ length: 5 }).map((_, index) => (
-      <Sparkles key={index} className={`size-3.5 ${index < rating ? "text-amber-300 fill-amber-300" : "text-white/15"}`} />
+      <Sparkles key={index} className={`size-3.5 ${index < rating ? "text-amber-300 fill-amber-300" : "text-hidden"}`} />
     ))}
   </div>
 ));
@@ -328,18 +328,18 @@ const HealthReport = ({ health, hasResumeContent }) => (
         </div>
       </>
     ) : (
-      <p className="text-sm text-white/30">Upload a resume to see health report.</p>
+      <p className="text-sm text-faint">Upload a resume to see health report.</p>
     )}
   </Card>
 );
 
 const ReportList = ({ title, items, empty, positive }) => (
   <div>
-    <p className="text-sm font-semibold text-white/70 mb-3">{title}</p>
+    <p className="text-sm font-semibold text-muted mb-3">{title}</p>
     <div className="space-y-2">
       {items.length ? items.map((item) => (
         <StatusRow key={item} label={item} passed={positive} soft={!positive} />
-      )) : <p className="text-xs text-white/30">{empty}</p>}
+      )) : <p className="text-xs text-faint">{empty}</p>}
     </div>
   </div>
 );
@@ -351,7 +351,7 @@ const Checklist = ({ items }) => (
         {items.map((item) => <StatusRow key={item.label} label={item.label} passed={item.passed} />)}
       </div>
     ) : (
-      <p className="text-sm text-white/30">Upload a resume to see ATS compatibility checklist.</p>
+      <p className="text-sm text-faint">Upload a resume to see ATS compatibility checklist.</p>
     )}
   </Card>
 );
@@ -369,15 +369,15 @@ const Readability = ({ readability }) => (
             ["Long Sentences", readability.longSentences],
             ["Passive Voice", readability.passiveVoice],
           ].map(([label, value]) => (
-            <div key={label} className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-3">
-              <p className="text-sm font-semibold text-white">{value}</p>
-              <p className="text-xs text-white/35 mt-1">{label}</p>
+            <div key={label} className="rounded-xl bg-glass-3 border border-theme-light p-3">
+              <p className="text-sm font-semibold text-primary">{value}</p>
+              <p className="text-xs text-faint mt-1">{label}</p>
             </div>
           ))}
         </div>
       </>
     ) : (
-      <p className="text-sm text-white/30">Upload a resume to see readability analysis.</p>
+      <p className="text-sm text-faint">Upload a resume to see readability analysis.</p>
     )}
   </Card>
 );
@@ -391,7 +391,7 @@ const Formatting = ({ issues, hasResumeContent }) => (
         )) : <StatusRow label="No common formatting issues detected" passed />}
       </div>
     ) : (
-      <p className="text-sm text-white/30">Upload a resume to check formatting.</p>
+      <p className="text-sm text-faint">Upload a resume to check formatting.</p>
     )}
   </Card>
 );
@@ -403,11 +403,11 @@ const ActionVerbs = ({ weakVerbs, onCopy, hasResumeContent }) => (
         {weakVerbs.length ? weakVerbs.map((item) => {
           const suggestion = item.alternatives.join(", ");
           return (
-            <div key={item.phrase} className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-4">
+            <div key={item.phrase} className="rounded-xl bg-glass-2 border border-theme-light p-4">
               <p className="text-sm text-rose-200">Weak: {item.phrase}</p>
               <div className="flex items-center justify-between gap-3 mt-2">
-                <p className="text-xs text-white/40">Try: {suggestion}</p>
-                <button type="button" onClick={() => onCopy(suggestion)} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/10 text-white/50 hover:text-cyan-300 hover:border-cyan-500/30 text-xs">
+                <p className="text-xs text-subtle">Try: {suggestion}</p>
+                <button type="button" onClick={() => onCopy(suggestion)} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-theme text-primary/50 hover:text-cyan-300 hover:border-cyan-500/30 text-xs">
                   <Clipboard className="size-3" />
                   Copy
                 </button>
@@ -419,7 +419,7 @@ const ActionVerbs = ({ weakVerbs, onCopy, hasResumeContent }) => (
         )}
       </div>
     ) : (
-      <p className="text-sm text-white/30">Upload a resume to check for weak action verbs.</p>
+      <p className="text-sm text-faint">Upload a resume to check for weak action verbs.</p>
     )}
   </Card>
 );
@@ -430,9 +430,9 @@ const Priorities = ({ priorities, hasResumeContent }) => (
       {!hasResumeContent ? (
         <StatusRow label="Complete analysis to see recommendations." passed />
       ) : priorities.length ? priorities.map((item) => (
-        <div key={`${item.level}-${item.text}`} className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-3">
+        <div key={`${item.level}-${item.text}`} className="rounded-xl bg-glass-2 border border-theme-light p-3">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-sm text-white/80">{item.text}</p>
+            <p className="text-sm text-body">{item.text}</p>
             <span className={`px-2 py-1 rounded-lg text-[11px] border ${item.level === "High" ? "text-rose-200 bg-rose-500/10 border-rose-500/20" : item.level === "Medium" ? "text-amber-200 bg-amber-500/10 border-amber-500/20" : "text-cyan-200 bg-cyan-500/10 border-cyan-500/20"}`}>
               {item.level}
             </span>
@@ -451,7 +451,7 @@ const RecruiterScan = ({ scan, hasResumeContent }) => (
         <ReportList title="May be overlooked" items={scan.overlooked} empty="Nothing important appears overlooked." />
       </div>
     ) : (
-      <p className="text-sm text-white/30">Upload a resume to see recruiter scan results.</p>
+      <p className="text-sm text-faint">Upload a resume to see recruiter scan results.</p>
     )}
   </Card>
 );
@@ -464,11 +464,11 @@ const SkillsCategorization = ({ skills }) => {
     <Card icon={Layers3} title="Skills Categorization">
       {entries.length > 0 ? (
         <>
-          <p className="text-xs text-white/30 mb-4">{totalSkills} skill{totalSkills !== 1 ? "s" : ""} recognized across {entries.length} categor{entries.length !== 1 ? "ies" : "y"}</p>
+          <p className="text-xs text-faint mb-4">{totalSkills} skill{totalSkills !== 1 ? "s" : ""} recognized across {entries.length} categor{entries.length !== 1 ? "ies" : "y"}</p>
           <div className="space-y-4">
             {entries.map(([category, items]) => (
               <div key={category}>
-                <p className="text-sm font-semibold text-white/70 mb-2">{category} <span className="text-xs font-normal text-white/30">({items.length})</span></p>
+                <p className="text-sm font-semibold text-muted mb-2">{category} <span className="text-xs font-normal text-faint">({items.length})</span></p>
                 <div className="flex flex-wrap gap-2">
                   {items.map((skill) => (
                     <span key={`${category}-${skill}`} className="px-2.5 py-1 rounded-full text-xs border bg-violet-500/10 text-violet-200 border-violet-500/20">
@@ -481,7 +481,7 @@ const SkillsCategorization = ({ skills }) => {
           </div>
         </>
       ) : (
-        <p className="text-sm text-white/30">No recognizable skills detected yet.</p>
+        <p className="text-sm text-faint">No recognizable skills detected yet.</p>
       )}
     </Card>
   );
@@ -490,9 +490,9 @@ const SkillsCategorization = ({ skills }) => {
 const StatusRow = memo(({ label, passed, soft }) => {
   const Icon = passed ? CheckCircle2 : soft ? AlertCircle : XCircle;
   return (
-    <div className="flex items-center gap-2 rounded-lg bg-white/[0.02] border border-white/[0.05] px-3 py-2">
+    <div className="flex items-center gap-2 rounded-lg bg-glass-2 border border-white/[0.05] px-3 py-2">
       <Icon className={`size-4 shrink-0 ${passed ? "text-emerald-400" : soft ? "text-amber-400" : "text-rose-400"}`} />
-      <span className="text-sm text-white/60">{label}</span>
+      <span className="text-sm text-muted">{label}</span>
     </div>
   );
 });

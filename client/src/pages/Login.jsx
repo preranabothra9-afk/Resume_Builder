@@ -6,6 +6,7 @@ import { login } from '../app/features/authSlice.js';
 import toast from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
 import { useEffect } from 'react';
+import ThemeToggle from '../components/ThemeToggle';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -81,43 +82,43 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className='text-center mb-8'>
           <div className='inline-flex size-16 rounded-2xl gradient-btn items-center justify-center text-2xl font-bold mb-4 glow'>RB</div>
-          <h1 className="text-3xl font-bold text-white">
+          <h1 className="text-3xl font-bold text-primary">
             {state === "login" ? "Welcome back" : "Create account"}
           </h1>
-          <p className="text-white/40 text-sm mt-1">
+          <p className="text-subtle text-sm mt-1">
             {state === "login" ? "Sign in to continue building" : "Start your journey"}
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className='bg-white/[0.04] backdrop-blur-xl border border-white/[0.06] rounded-2xl p-6 space-y-4 shadow-2xl shadow-black/30'>
+        <form onSubmit={handleSubmit} className='bg-glass-4 backdrop-blur-xl border border-theme-light rounded-2xl p-6 space-y-4 shadow-2xl shadow-black/30'>
           {state !== "login" && (
-            <div className="flex items-center w-full bg-white/5 border border-white/10 h-12 rounded-xl overflow-hidden pl-4 gap-2.5 focus-within:border-violet-500/50 focus-within:ring-2 focus-within:ring-violet-500/20 transition-all">
-              <User2Icon size={16} className='text-white/30 shrink-0' />
+            <div className="flex items-center w-full bg-glass-5 border border-theme h-12 rounded-xl overflow-hidden pl-4 gap-2.5 focus-within:border-violet-500/50 focus-within:ring-2 focus-within:ring-violet-500/20 transition-all">
+              <User2Icon size={16} className='text-faint shrink-0' />
               <input type="text" name="name" placeholder="Name"
-                className="border-none outline-none ring-0 bg-transparent w-full text-white/90 placeholder:text-white/30"
+                className="border-none outline-none ring-0 bg-transparent w-full text-body"
                 value={formData.name} onChange={handleChange} required />
             </div>
           )}
-          <div className="flex items-center w-full bg-white/5 border border-white/10 h-12 rounded-xl overflow-hidden pl-4 gap-2.5 focus-within:border-violet-500/50 focus-within:ring-2 focus-within:ring-violet-500/20 transition-all">
-            <Mail size={16} className='text-white/30 shrink-0' />
+          <div className="flex items-center w-full bg-glass-5 border border-theme h-12 rounded-xl overflow-hidden pl-4 gap-2.5 focus-within:border-violet-500/50 focus-within:ring-2 focus-within:ring-violet-500/20 transition-all">
+            <Mail size={16} className='text-faint shrink-0' />
             <input type="email" name="email" placeholder="Email address"
-              className="border-none outline-none ring-0 bg-transparent w-full text-white/90 placeholder:text-white/30"
+              className="border-none outline-none ring-0 bg-transparent w-full text-body"
               value={formData.email} onChange={handleChange} required />
           </div>
-          <div className="flex items-center w-full bg-white/5 border border-white/10 h-12 rounded-xl overflow-hidden px-4 gap-2.5 focus-within:border-violet-500/50 focus-within:ring-2 focus-within:ring-violet-500/20 transition-all">
-            <Lock size={16} className='text-white/30 shrink-0' />
+          <div className="flex items-center w-full bg-glass-5 border border-theme h-12 rounded-xl overflow-hidden px-4 gap-2.5 focus-within:border-violet-500/50 focus-within:ring-2 focus-within:ring-violet-500/20 transition-all">
+            <Lock size={16} className='text-faint shrink-0' />
             <input type={showPassword ? "text" : "password"} name="password" placeholder="Password"
-              className="border-none outline-none ring-0 bg-transparent w-full text-white/90 placeholder:text-white/30"
+              className="border-none outline-none ring-0 bg-transparent w-full text-body"
               value={formData.password} onChange={handleChange} required />
             <button type="button" onClick={() => setShowPassword(prev => !prev)}
-              className="text-white/30 hover:text-white/60 cursor-pointer transition-colors shrink-0">
+              className="text-faint hover-text-primary cursor-pointer transition-colors shrink-0">
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
 
           <div className="flex items-center justify-between text-sm">
             {state === "login" && (
-              <label className="flex items-center gap-2 text-white/50 cursor-pointer">
+              <label className="flex items-center gap-2 text-dim cursor-pointer">
                 <input type="checkbox" checked={rememberMe}
                   onChange={(e) => {
                     const checked = e.target.checked;
@@ -127,7 +128,7 @@ const Login = () => {
                       localStorage.removeItem("rememberMe");
                     }
                   }}
-                  className="rounded border-white/20 bg-white/5 text-violet-600 focus:ring-violet-500 size-4" />
+                  className="rounded border-theme bg-glass-5 text-violet-600 focus:ring-violet-500 size-4" />
                 Remember me
               </label>
             )}
@@ -144,13 +145,16 @@ const Login = () => {
           </button>
 
           <p onClick={() => setState(prev => prev === "login" ? "register" : "login")}
-            className="text-white/40 text-sm text-center cursor-pointer">
+            className="text-subtle text-sm text-center cursor-pointer">
             {state === "login" ? "Don't have an account?" : "Already have an account?"}{' '}
             <span className="text-violet-400 hover:text-violet-300 font-medium transition-colors">
               {state === "login" ? "Sign up" : "Sign in"}
             </span>
           </p>
         </form>
+      </div>
+      <div className='fixed bottom-6 right-6'>
+        <ThemeToggle className='border border-theme bg-glass-4' />
       </div>
     </div>
   )
