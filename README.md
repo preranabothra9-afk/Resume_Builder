@@ -317,12 +317,13 @@ All endpoints are prefixed with `/api`.
 
 | Home Page | Testimonials |
 |---|---|
-| <img src="https://github.com/user-attachments/assets/577580a5-e496-4421-acec-c10f07d0cbe8" width="100%"> | <img src="https://github.com/user-attachments/assets/1a2a9af6-b2fb-41fa-a552-f6319f3ad762" width="100%"> |
+| <img src="https://github.com/user-attachments/assets/0cf8af5b-9213-4c13-816d-448b1f4a2de9" width="100%"> | <img src="https://github.com/user-attachments/assets/c87a4818-3116-49f3-99f2-e97a5ce7cae9" width="100%"> |
 | Landing page with AI-powered resume generation | User testimonials section |
+
 
 | Dashboard | Resume Builder |
 |---|---|
-| <img src="https://github.com/user-attachments/assets/8c649499-8282-48f9-8071-c3084502792c" width="100%"> | <img src="https://github.com/user-attachments/assets/e39c7a20-94bf-463b-ab7d-dcf8fa19e811" width="100%"> |
+| <img src="https://github.com/user-attachments/assets/55b93372-f0f4-450e-837d-5345c8d21283" width="100%"> | <img src="https://github.com/user-attachments/assets/fe05f403-2a8c-41ac-9c62-40cc3b7cd29e" width="100%"> |
 | User dashboard to manage resumes | AI-assisted resume editor |
 
 ## 🌐 Live Demo
